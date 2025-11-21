@@ -8,9 +8,9 @@
     "start": "node dist/main",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
+    "test:cov": "jest --coverage --passWithNoTests",
     "clean": "rm -rf dist node_modules"
   },
   "dependencies": {
