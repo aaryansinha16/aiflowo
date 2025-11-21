@@ -1,4 +1,4 @@
-export interface ToolResponse<T = any> {
+export interface ToolResponse<T = unknown> {
   success: boolean;
   data: T | null;
   error: ToolError | null;
@@ -25,12 +25,12 @@ export interface TaskPlan {
 
 export interface TaskStep {
   tool: string;
-  params: Record<string, any>;
+  params: Record<string, unknown>;
 }
 
 export interface UserProfile {
-  travelPrefs?: Record<string, any>;
-  socialAccounts?: Record<string, any>;
+  travelPrefs?: Record<string, unknown>;
+  socialAccounts?: Record<string, unknown>;
   resumeUrl?: string;
   storageState?: string;
 }

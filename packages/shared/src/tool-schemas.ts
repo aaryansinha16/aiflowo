@@ -24,7 +24,7 @@ export const BookFlightSchema = z.object({
 
 export const FillFormSchema = z.object({
   url: z.string().url(),
-  fields: z.record(z.any()),
+  fields: z.record(z.unknown()),
   files: z.record(z.string()).optional(),
 });
 
@@ -47,7 +47,7 @@ export const BrowserActionSchema = z.object({
     z.object({
       action: z.enum(['goto', 'click', 'type', 'upload', 'wait', 'extract']),
       selector: z.string().optional(),
-      value: z.any().optional(),
+      value: z.unknown().optional(),
     })
   ),
 });
