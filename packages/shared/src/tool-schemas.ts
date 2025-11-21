@@ -24,8 +24,8 @@ export const BookFlightSchema = z.object({
 
 export const FillFormSchema = z.object({
   url: z.string().url(),
-  fields: z.record(z.unknown()),
-  files: z.record(z.string()).optional(),
+  fields: z.record(z.string(), z.unknown()),
+  files: z.record(z.string(), z.string()).optional(),
 });
 
 export const ApplyJobSchema = z.object({
