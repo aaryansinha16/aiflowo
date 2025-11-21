@@ -51,8 +51,8 @@ aiflowo/
 
 ### Prerequisites
 
-- Node.js >= 18
-- npm >= 9
+- Node.js >= 20 (LTS recommended)
+- npm >= 10
 - Docker & Docker Compose
 
 ### Installation
