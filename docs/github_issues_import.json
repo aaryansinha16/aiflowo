@@ -1,0 +1,313 @@
+{
+  "issues": [
+    {
+      "title": "Initialize Monorepo & Folder Structure",
+      "body": "Epic: Setup\n\nCreate monorepo with apps/frontend, apps/backend, packages/shared, docs.\n\n**Tasks:**\n- [ ] Create folder skeleton\n- [ ] Setup turborepo or pnpm workspace\n- [ ] Add root ESLint + Prettier\n- [ ] Add .env templates\n",
+      "labels": [
+        "epic:Setup",
+        "setup",
+        "infra"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Initialize Next.js Frontend",
+      "body": "Epic: Setup\n\nAdd Next.js App Router project with Tailwind.\n\n**Tasks:**\n- [ ] npx create-next-app\n- [ ] Tailwind config\n- [ ] Auth placeholders\n",
+      "labels": [
+        "epic:Setup",
+        "frontend",
+        "setup"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Initialize Backend (NestJS/Express)",
+      "body": "Epic: Setup\n\nCreate backend service with base modules and health route.\n\n**Tasks:**\n- [ ] Create NestJS project\n- [ ] Add health check `/health`\n- [ ] Setup env system\n",
+      "labels": [
+        "epic:Setup",
+        "backend",
+        "setup"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Setup Database + Prisma",
+      "body": "Epic: Setup\n\nSetup PostgreSQL + Prisma with basic schemas.\n\n**Tasks:**\n- [ ] Install Prisma\n- [ ] Create User, UserProfile, Task, TaskLog models\n- [ ] Migrations\n",
+      "labels": [
+        "epic:Setup",
+        "backend",
+        "db"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Setup Redis + BullMQ Queues",
+      "body": "Epic: Setup\n\nBackground task queue for long-running actions.\n\n**Tasks:**\n- [ ] Install Redis & BullMQ\n- [ ] Create taskQueue, browserQueue, mediaQueue\n",
+      "labels": [
+        "epic:Setup",
+        "backend",
+        "queue"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Magic Link Authentication",
+      "body": "Epic: Auth\n\nImplement passwordless email login.\n\n**Tasks:**\n- [ ] Generate magic link\n- [ ] Verify token\n- [ ] Frontend login UI\n",
+      "labels": [
+        "epic:Auth",
+        "auth"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "User Profile CRUD",
+      "body": "Epic: Auth\n\nAllow users to update travel prefs, social accounts, resume URL.\n\n**Tasks:**\n- [ ] GET /profile\n- [ ] POST /profile\n- [ ] Link to DB\n",
+      "labels": [
+        "epic:Auth",
+        "backend"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "LLM Intent Classifier",
+      "body": "Epic: Agent\n\nCreate LLM function to classify user requests.\n\n**Tasks:**\n- [ ] Add intent prompt\n- [ ] Parse into {intent, params}\n",
+      "labels": [
+        "epic:Agent",
+        "ai",
+        "backend"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "LLM Multi-Step Plan Generator",
+      "body": "Epic: Agent\n\nConvert intent \u2192 tool call plan.\n\n**Tasks:**\n- [ ] Create plan schema\n- [ ] Create plan prompt\n- [ ] Add JSON validation\n",
+      "labels": [
+        "epic:Agent",
+        "ai"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Tool Registry System",
+      "body": "Epic: Agent\n\nRegister tools and map tool names to handlers.\n\n**Tasks:**\n- [ ] Create tool definitions\n- [ ] Add execution wrapper\n- [ ] Add error schema\n",
+      "labels": [
+        "epic:Agent",
+        "backend"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Create Task Model & Status Flow",
+      "body": "Epic: Tasks\n\nTask states: pending \u2192 running \u2192 succeeded/failed.\n\n**Tasks:**\n- [ ] DB schema\n- [ ] Create service\n- [ ] Update state transitions\n",
+      "labels": [
+        "epic:Tasks",
+        "backend",
+        "db"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Task Logs Storage",
+      "body": "Epic: Tasks\n\nStore logs + timestamps + error details.\n\n**Tasks:**\n- [ ] Model\n- [ ] Append logs from worker\n- [ ] Expose logs in API\n",
+      "labels": [
+        "epic:Tasks",
+        "backend"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Create Task Execution Endpoint",
+      "body": "Epic: Tasks\n\nPOST /task to create new task from user message.\n\n**Tasks:**\n- [ ] Create endpoint\n- [ ] Trigger LLM\n- [ ] Save plan\n- [ ] Enqueue queue job\n",
+      "labels": [
+        "epic:Tasks",
+        "backend",
+        "api"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Setup Playwright Worker Container",
+      "body": "Epic: Browser Engine\n\nBasic headless browser worker using Playwright.\n\n**Tasks:**\n- [ ] Dockerfile\n- [ ] Browser initialization\n- [ ] Worker queue listener\n",
+      "labels": [
+        "epic:Browser Engine",
+        "worker"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Basic Browser Actions (goto, click, type)",
+      "body": "Epic: Browser Engine\n\nImplement basic Playwright actions.\n\n**Tasks:**\n- [ ] Implement goto()\n- [ ] click()\n- [ ] type()\n- [ ] wait for DOM\n",
+      "labels": [
+        "epic:Browser Engine",
+        "worker"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "File Upload Handler",
+      "body": "Epic: Browser Engine\n\nAdd upload action and map S3 to Playwright uploads.\n\n**Tasks:**\n- [ ] Add upload action\n- [ ] Map S3 \u2192 temporary disk \u2192 Playwright upload\n",
+      "labels": [
+        "epic:Browser Engine",
+        "worker"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Form Filler (DOM Analyzer)",
+      "body": "Epic: Browser Engine\n\nExtract input field structure for mapping.\n\n**Tasks:**\n- [ ] DOM scan\n- [ ] Field labeling\n- [ ] Fill values\n",
+      "labels": [
+        "epic:Browser Engine",
+        "worker",
+        "ai"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Flight Search API Integration",
+      "body": "Epic: Flights\n\nAdd Amadeus/Skyscanner integration and implement search_flights tool handler.\n\n**Tasks:**\n- [ ] Add API client\n- [ ] Implement search_flights handler\n- [ ] Map results format\n",
+      "labels": [
+        "epic:Flights",
+        "api"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Basic Booking Flow (API or Browser)",
+      "body": "Epic: Flights\n\nBooking API integration or browser fallback; OTP pause & resume.\n\n**Tasks:**\n- [ ] Booking API integration (if available)\n- [ ] Browser fallback flow\n- [ ] OTP pause & resume\n",
+      "labels": [
+        "epic:Flights",
+        "worker"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "General Form Filling Tool Endpoint",
+      "body": "Epic: Forms\n\nPOST /forms/submit to accept fields/files and route to worker.\n\n**Tasks:**\n- [ ] POST /forms/submit\n- [ ] Validate payload\n- [ ] Enqueue worker job\n",
+      "labels": [
+        "epic:Forms",
+        "api"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "OTP/CAPTCHA Handling Logic",
+      "body": "Epic: Forms\n\nDetect OTP fields, notify user, and resume after OTP.\n\n**Tasks:**\n- [ ] Detect OTP inputs\n- [ ] Notify frontend\n- [ ] Resume worker after OTP\n",
+      "labels": [
+        "epic:Forms",
+        "worker"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Job Search Integration (Indeed API)",
+      "body": "Epic: Jobs\n\nQuery jobs, filter by role/location, return list.\n\n**Tasks:**\n- [ ] Implement Indeed client\n- [ ] Search endpoint\n- [ ] Filter & map results\n",
+      "labels": [
+        "epic:Jobs",
+        "api"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Job Apply Worker (LinkedIn Browser Flow)",
+      "body": "Epic: Jobs\n\nLinkedIn apply flow using Playwright: login, fill forms, upload resume, parse confirmation.\n\n**Tasks:**\n- [ ] Session login\n- [ ] Fill application forms\n- [ ] Upload resume\n- [ ] Capture confirmation\n",
+      "labels": [
+        "epic:Jobs",
+        "worker"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "LLM Cover Letter Generator",
+      "body": "Epic: Jobs\n\nGenerate personalized cover letters using LLM prompts and save to task.\n\n**Tasks:**\n- [ ] Create prompt template\n- [ ] Add API wrapper\n- [ ] Save output to task\n",
+      "labels": [
+        "epic:Jobs",
+        "ai"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Image Editor (Crop + Filters + Text)",
+      "body": "Epic: Media\n\nImplement React Konva based image editor with export to S3 and preset filters.\n\n**Tasks:**\n- [ ] Editor UI\n- [ ] Export to S3\n- [ ] Preset filters\n",
+      "labels": [
+        "epic:Media",
+        "frontend"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Video Trimming (FFmpeg Worker)",
+      "body": "Epic: Media\n\nFFmpeg worker setup for trimming and exporting video.\n\n**Tasks:**\n- [ ] FFmpeg worker\n- [ ] Trim operation\n- [ ] Save output to S3\n",
+      "labels": [
+        "epic:Media",
+        "worker"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Instagram Graph API Posting",
+      "body": "Epic: Social\n\nImplement Instagram Graph API posting for business accounts: upload container, publish, handle errors.\n\n**Tasks:**\n- [ ] Upload container\n- [ ] Publish post\n- [ ] Error handling\n",
+      "labels": [
+        "epic:Social",
+        "api"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Browser-Based Posting Fallback",
+      "body": "Epic: Social\n\nPlaywright-based fallback for personal Instagram accounts: login, upload, post caption, screenshot confirmation.\n\n**Tasks:**\n- [ ] Login session handling\n- [ ] Upload media\n- [ ] Post caption\n- [ ] Capture confirmation screenshot\n",
+      "labels": [
+        "epic:Social",
+        "worker"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Caption + Hashtag Generator",
+      "body": "Epic: Social\n\nLLM-powered caption & hashtag generator with tone presets.\n\n**Tasks:**\n- [ ] Create LLM prompt\n- [ ] Add tone presets\n- [ ] Integrate into post flow\n",
+      "labels": [
+        "epic:Social",
+        "ai"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    },
+    {
+      "title": "Cron Scheduler for Automated Tasks",
+      "body": "Epic: Scheduler\n\nSetup BullMQ scheduled jobs, store schedule rules, and trigger plan execution.\n\n**Tasks:**\n- [ ] Scheduled job worker\n- [ ] Store schedule rules in DB\n- [ ] Trigger task execution\n",
+      "labels": [
+        "epic:Scheduler",
+        "backend"
+      ],
+      "created_at": "2025-11-21T12:00:00+05:30",
+      "closed": false
+    }
+  ]
+}
