@@ -7,7 +7,8 @@ import prettierConfig from 'eslint-config-prettier';
 export default [
   js.configs.recommended,
   {
-    files: ['**/*.{js,mjs,cjs,ts,tsx}'],
+    files: ['**/*.{ts,tsx,js,jsx}'],
+    ignores: ['**/node_modules/**', '**/dist/**', '**/.next/**', '**/build/**'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -62,6 +63,23 @@ export default [
           },
         },
       ],
+    },
+  },
+  // Test files configuration
+  {
+    files: ['**/*.spec.ts', '**/*.test.ts'],
+    languageOptions: {
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        jest: 'readonly',
+      },
     },
   },
   {

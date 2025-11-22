@@ -72,6 +72,24 @@ export default function DashboardPage() {
             </Text>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Get started with AI Flowo</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Button className="w-full" variant="outline" onClick={() => router.push('/profile')}>
+              Edit Profile
+            </Button>
+            <Button className="w-full" variant="outline">
+              Create New Task
+            </Button>
+            <Button className="w-full" variant="outline">
+              View History
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
