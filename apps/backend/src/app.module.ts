@@ -4,10 +4,10 @@ import { APP_GUARD } from '@nestjs/core';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { AuthModule, JwtAuthGuard } from './auth';
 import { PrismaModule } from './libs/prisma';
 import { QueueModule } from './libs/queue';
+import { ProfileModule } from './profile';
 
 @Module({
   imports: [
@@ -18,6 +18,7 @@ import { QueueModule } from './libs/queue';
     PrismaModule,
     QueueModule,
     AuthModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [
