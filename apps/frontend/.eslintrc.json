@@ -9,6 +9,7 @@
     "node": true
   },
   "globals": {
-    "React": "readonly"
+    "React": "readonly",
+    "window": "readonly"
   }
 }
