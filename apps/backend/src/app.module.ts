@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './libs/prisma';
+import { QueueModule } from './libs/queue';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { PrismaModule } from './libs/prisma';
       envFilePath: '../../.env',
     }),
     PrismaModule,
+    QueueModule,
   ],
   controllers: [AppController],
   providers: [AppService],

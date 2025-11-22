@@ -7,12 +7,12 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get('health')
-  async getHealth(): Promise<{ status: string; timestamp: string; database: string }> {
+  async getHealth() {
     return this.appService.getHealth();
   }
 
   @Get()
-  getWelcome(): { message: string } {
+  getWelcome() {
     return this.appService.getWelcome();
   }
 }
