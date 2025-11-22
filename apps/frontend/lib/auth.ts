@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /**
  * Auth utility functions for token management
  */
@@ -9,7 +10,7 @@ export interface User {
   id: string;
   email: string;
   name?: string;
-  profile?: any;
+  profile?: Record<string, unknown>;
 }
 
 export interface AuthTokens {

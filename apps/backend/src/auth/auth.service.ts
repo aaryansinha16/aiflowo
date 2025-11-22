@@ -1,7 +1,8 @@
+import { randomUUID } from 'crypto';
+
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { randomUUID } from 'crypto';
 
 import { PrismaService } from '../libs/prisma';
 import { QueueService } from '../libs/queue';
@@ -91,7 +92,7 @@ export class AuthService {
   /**
    * Verify magic link token and generate JWT
    */
-  async verifyMagicLink(token: string): Promise<{ accessToken: string; user: any }> {
+  async verifyMagicLink(token: string): Promise<{ accessToken: string; user: unknown }> {
     // Find magic link
     const magicLink = await this.prisma.magicLink.findUnique({
       where: { token },
@@ -159,7 +160,7 @@ export class AuthService {
   /**
    * Validate JWT payload and return user
    */
-  async validateUser(payload: any): Promise<any> {
+  async validateUser(payload: { sub: string; email: string }): Promise<unknown> {
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
       include: {

@@ -13,6 +13,8 @@ dist/
 build/
 .next/
 out/
+*.tsbuildinfo
+tsconfig.tsbuildinfo
 
 # Environment variables
 .env

@@ -3,13 +3,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+/* eslint-disable no-undef */
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
 interface User {
   id: string;
   email: string;
   name?: string;
-  profile?: any;
+  profile?: Record<string, unknown>;
 }
 
 interface RegisterData {

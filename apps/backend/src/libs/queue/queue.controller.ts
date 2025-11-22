@@ -32,7 +32,7 @@ export class QueueController {
   @Post(':queueName/jobs')
   async addJob(
     @Param('queueName') queueName: QueueName,
-    @Body() body: { type: string; data: any; options?: any }
+    @Body() body: { type: string; data: Record<string, unknown>; options?: Record<string, unknown> }
   ) {
     const job = await this.queueService.addJob(queueName, body.type, body.data, body.options);
     
