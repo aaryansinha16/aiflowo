@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
 
+import { PrismaService } from './libs/prisma';
+
 @Injectable()
 export class AppService {
-  getHealth(): { status: string; timestamp: string } {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async getHealth(): Promise<{ status: string; timestamp: string; database: string }> {
+    const dbHealthy = await this.prisma.healthCheck();
+
     return {
-      status: 'ok',
+      status: dbHealthy ? 'ok' : 'degraded',
       timestamp: new Date().toISOString(),
+      database: dbHealthy ? 'connected' : 'disconnected',
     };
   }
 

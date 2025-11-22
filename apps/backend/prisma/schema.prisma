@@ -1,0 +1,322 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// User & Authentication Models
+// ============================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  profile      UserProfile?
+  tasks        Task[]
+  magicLinks   MagicLink[]
+  sessions     Session[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model UserProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Personal Info
+  name          String?
+  profilePicUrl String?
+
+  // Travel Preferences (for flight booking tasks)
+  preferredAirlines  String[] // e.g., ["United", "Delta"]
+  preferredCabinClass String?  // e.g., "economy", "business"
+  frequentFlyerNumbers Json?    // { "United": "UA123", "Delta": "DL456" }
+
+  // Social Media Accounts (for social posting tasks)
+  socialAccounts Json? // { "instagram": {...}, "twitter": {...} }
+
+  // Professional Info (for job application tasks)
+  resumeUrl     String?
+  linkedInUrl   String?
+  githubUrl     String?
+  portfolioUrl  String?
+
+  // Preferences
+  timezone      String   @default("UTC")
+  notifications Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("user_profiles")
+}
+
+model MagicLink {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  email     String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  usedAt    DateTime?
+  
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([userId])
+  @@index([email])
+  @@map("magic_links")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  token     String   @unique
+  expiresAt DateTime
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([token])
+  @@index([userId])
+  @@map("sessions")
+}
+
+// ============================================
+// Task Execution Models
+// ============================================
+
+enum TaskStatus {
+  PENDING
+  RUNNING
+  PAUSED
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Task Details
+  title       String
+  description String?
+  intent      String       // Original user request
+  status      TaskStatus   @default(PENDING)
+  priority    TaskPriority @default(MEDIUM)
+
+  // Execution Plan
+  plan        Json?        // LLM-generated execution plan
+  currentStep Int          @default(0)
+  totalSteps  Int          @default(0)
+
+  // Results
+  result      Json?        // Task execution result
+  error       String?      // Error message if failed
+  
+  // Timing
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relations
+  logs        TaskLog[]
+  artifacts   TaskArtifact[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("tasks")
+}
+
+enum LogLevel {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+}
+
+model TaskLog {
+  id        String   @id @default(cuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  
+  level     LogLevel @default(INFO)
+  message   String   @db.Text
+  step      Int?     // Which step this log belongs to
+  metadata  Json?    // Additional context
+  
+  timestamp DateTime @default(now())
+
+  @@index([taskId])
+  @@index([timestamp])
+  @@map("task_logs")
+}
+
+enum ArtifactType {
+  SCREENSHOT
+  PDF
+  FILE
+  IMAGE
+  VIDEO
+  JSON
+  TEXT
+}
+
+model TaskArtifact {
+  id          String       @id @default(cuid())
+  taskId      String
+  task        Task         @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  
+  type        ArtifactType
+  name        String
+  description String?
+  url         String       // S3 URL or local path
+  size        Int?         // File size in bytes
+  mimeType    String?
+  
+  createdAt   DateTime     @default(now())
+
+  @@index([taskId])
+  @@map("task_artifacts")
+}
+
+// ============================================
+// Tool & Agent Models
+// ============================================
+
+enum ToolCategory {
+  BROWSER
+  API
+  FILE
+  EMAIL
+  SOCIAL
+  TRAVEL
+  JOB
+  GENERAL
+}
+
+model Tool {
+  id          String       @id @default(cuid())
+  
+  name        String       @unique // e.g., "search_google", "book_flight"
+  displayName String       // e.g., "Search Google"
+  description String       @db.Text
+  category    ToolCategory
+  
+  // Tool Configuration
+  schema      Json         // JSON Schema for tool parameters
+  enabled     Boolean      @default(true)
+  
+  // Usage Stats
+  usageCount  Int          @default(0)
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relations
+  executions  ToolExecution[]
+
+  @@index([category])
+  @@index([enabled])
+  @@map("tools")
+}
+
+enum ExecutionStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+model ToolExecution {
+  id        String          @id @default(cuid())
+  toolId    String
+  tool      Tool            @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  
+  taskId    String?         // Optional: link to task if part of a task
+  
+  input     Json            // Tool input parameters
+  output    Json?           // Tool output result
+  error     String?         // Error message if failed
+  status    ExecutionStatus @default(PENDING)
+  
+  duration  Int?            // Execution time in milliseconds
+  
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime      @default(now())
+
+  @@index([toolId])
+  @@index([taskId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("tool_executions")
+}
+
+// ============================================
+// Queue & Worker Models
+// ============================================
+
+enum QueueName {
+  TASK
+  BROWSER
+  MEDIA
+  EMAIL
+}
+
+model QueueJob {
+  id        String    @id @default(cuid())
+  
+  queue     QueueName
+  jobId     String    @unique // BullMQ job ID
+  taskId    String?   // Optional: link to task
+  
+  data      Json      // Job data
+  status    String    // Job status from BullMQ
+  progress  Int       @default(0)
+  
+  attempts  Int       @default(0)
+  maxAttempts Int     @default(3)
+  
+  error     String?
+  result    Json?
+  
+  createdAt   DateTime  @default(now())
+  startedAt   DateTime?
+  completedAt DateTime?
+  failedAt    DateTime?
+
+  @@index([queue])
+  @@index([jobId])
+  @@index([taskId])
+  @@index([status])
+  @@map("queue_jobs")
+}
