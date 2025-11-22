@@ -3,11 +3,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+/* eslint-disable no-undef */
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+
 interface User {
   id: string;
   email: string;
   name?: string;
-  createdAt: string;
+  profile?: Record<string, unknown>;
 }
 
 interface RegisterData {
@@ -18,12 +21,15 @@ interface RegisterData {
 
 interface AuthState {
   user: User | null;
+  token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   
   // Actions
   setUser: (user: User | null) => void;
-  login: (email: string) => Promise<void>;
+  setToken: (token: string | null) => void;
+  sendMagicLink: (email: string) => Promise<{ success: boolean; message: string }>;
+  verifyMagicLink: (token: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
@@ -31,73 +37,142 @@ interface AuthState {
 
 export const useAuth = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
+      token: null,
       isAuthenticated: false,
       isLoading: true,
 
       setUser: (user) => set({ user, isAuthenticated: !!user, isLoading: false }),
 
-      login: async (email) => {
-        // TODO: Implement actual API call
-        // const response = await fetch('/api/auth/magic-link', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ email }),
-        // });
-        //
-        // if (!response.ok) throw new Error('Failed to send magic link');
-        
-        console.log('Sending magic link to:', email);
+      setToken: (token) => set({ token }),
+
+      sendMagicLink: async (email) => {
+        try {
+          const response = await fetch(`${API_URL}/auth/magic-link/send`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.message || 'Failed to send magic link');
+          }
+
+          return data;
+        } catch (error) {
+          console.error('Send magic link error:', error);
+          throw error;
+        }
+      },
+
+      verifyMagicLink: async (token) => {
+        try {
+          const response = await fetch(`${API_URL}/auth/magic-link/verify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.message || 'Failed to verify magic link');
+          }
+
+          // Store token and user
+          set({
+            token: data.accessToken,
+            user: data.user,
+            isAuthenticated: true,
+            isLoading: false,
+          });
+        } catch (error) {
+          console.error('Verify magic link error:', error);
+          throw error;
+        }
       },
 
       register: async (data) => {
-        // TODO: Implement actual API call
-        // const response = await fetch('/api/auth/register', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify(data),
-        // });
-        //
-        // if (!response.ok) {
-        //   const error = await response.json();
-        //   throw new Error(error.message || 'Registration failed');
-        // }
-        //
-        // const user = await response.json();
-        // set({ user, isAuthenticated: true });
-        
-        console.log('Registering user:', data);
+        try {
+          const response = await fetch(`${API_URL}/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            throw new Error(result.message || 'Registration failed');
+          }
+
+          set({
+            token: result.accessToken,
+            user: result.user,
+            isAuthenticated: true,
+          });
+        } catch (error) {
+          console.error('Register error:', error);
+          throw error;
+        }
       },
 
       logout: async () => {
-        // TODO: Implement actual API call
-        // await fetch('/api/auth/logout', { method: 'POST' });
-        
-        set({ user: null, isAuthenticated: false });
+        try {
+          const token = get().token;
+          
+          if (token) {
+            await fetch(`${API_URL}/auth/logout`, {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+          }
+        } catch (error) {
+          console.error('Logout error:', error);
+        } finally {
+          set({ user: null, token: null, isAuthenticated: false });
+        }
       },
 
       checkAuth: async () => {
         try {
-          // TODO: Implement actual API call
-          // const response = await fetch('/api/auth/me');
-          // 
-          // if (response.ok) {
-          //   const user = await response.json();
-          //   set({ user, isAuthenticated: true, isLoading: false });
-          // } else {
-          //   set({ user: null, isAuthenticated: false, isLoading: false });
-          // }
+          const token = get().token;
           
-          set({ isLoading: false });
-        } catch {
-          set({ user: null, isAuthenticated: false, isLoading: false });
+          if (!token) {
+            set({ user: null, isAuthenticated: false, isLoading: false });
+            return;
+          }
+
+          const response = await fetch(`${API_URL}/auth/me`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            const user = await response.json();
+            set({ user, isAuthenticated: true, isLoading: false });
+          } else {
+            set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+          }
+        } catch (error) {
+          console.error('Check auth error:', error);
+          set({ user: null, token: null, isAuthenticated: false, isLoading: false });
         }
       },
     }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+        isAuthenticated: state.isAuthenticated,
+      }),
     }
   )
 );

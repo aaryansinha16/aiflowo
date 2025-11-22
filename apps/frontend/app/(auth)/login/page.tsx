@@ -15,25 +15,18 @@ export default function LoginPage() {
   const handleSendMagicLink = async (emailAddress: string) => {
     setIsLoading(true);
     
-    // TODO: Replace with actual API call
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    // try {
-    //   const response = await fetch('/api/auth/magic-link', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ email: emailAddress }),
-    //   });
-    //   
-    //   if (!response.ok) throw new Error('Failed to send magic link');
-    // } catch (error) {
-    //   throw error;
-    // }
-
-    setEmail(emailAddress);
-    setStep('sent');
-    setIsLoading(false);
+    try {
+      const { useAuth } = await import('@/hooks/useAuth');
+      await useAuth.getState().sendMagicLink(emailAddress);
+      
+      setEmail(emailAddress);
+      setStep('sent');
+    } catch (error) {
+      console.error('Failed to send magic link:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleLogin = async () => {

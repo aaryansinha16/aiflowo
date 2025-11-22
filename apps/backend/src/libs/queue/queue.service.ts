@@ -114,16 +114,11 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
   /**
    * Add a job to a queue
    */
-  async addJob<T = any>(
-    queueName: QueueName,
-    jobType: string,
-    data: T,
-    options?: JobsOptions
-  ): Promise<Job<T>> {
+  async addJob(queueName: QueueName, type: string, data: Record<string, unknown>, options?: JobsOptions): Promise<Job> {
     const queue = this.getQueue(queueName);
-    const job = await queue.add(jobType, data, options);
+    const job = await queue.add(type, data, options);
     
-    this.logger.log(`Job ${job.id} added to queue "${queueName}" (type: ${jobType})`);
+    this.logger.log(`Job ${job.id} added to queue "${queueName}" (type: ${type})`);
     
     return job;
   }

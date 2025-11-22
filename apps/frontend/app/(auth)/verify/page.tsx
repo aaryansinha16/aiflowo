@@ -27,32 +27,23 @@ function VerifyContent() {
         return;
       }
 
-      // TODO: Replace with actual API call
-      // Simulate verification
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // try {
-      //   const response = await fetch('/api/auth/verify', {
-      //     method: 'POST',
-      //     headers: { 'Content-Type': 'application/json' },
-      //     body: JSON.stringify({ token }),
-      //   });
-      //
-      //   if (!response.ok) {
-      //     const data = await response.json();
-      //     throw new Error(data.message || 'Verification failed');
-      //   }
-      //
-      //   setStatus('success');
-      //   setTimeout(() => router.push('/dashboard'), 2000);
-      // } catch (err) {
-      //   setStatus('error');
-      //   setError(err instanceof Error ? err.message : 'Verification failed');
-      // }
-
-      // Simulated success
-      setStatus('success');
-      setTimeout(() => router.push('/'), 2000);
+      try {
+        const { useAuth } = await import('@/hooks/useAuth');
+        await useAuth.getState().verifyMagicLink(token);
+        
+        setStatus('success');
+        setTimeout(() => router.push('/dashboard'), 2000);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Verification failed';
+        
+        if (errorMessage.includes('expired')) {
+          setStatus('expired');
+        } else {
+          setStatus('error');
+        }
+        
+        setError(errorMessage);
+      }
     };
 
     verifyToken();

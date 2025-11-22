@@ -15,18 +15,36 @@ export class AppService {
     timestamp: string;
     database: string;
     redis: string;
-    queues?: any;
+    queues: Array<{
+      queueName: string;
+      waiting: number;
+      active: number;
+      completed: number;
+      failed: number;
+      delayed: number;
+      total: number;
+    }>;
   }> {
     const dbHealthy = await this.prisma.healthCheck();
     const redisHealthy = await this.queueService.healthCheck();
 
     // Get queue stats if healthy
-    let queueStats;
+    let queueStats: Array<{
+      queueName: string;
+      waiting: number;
+      active: number;
+      completed: number;
+      failed: number;
+      delayed: number;
+      total: number;
+    }> = [];
+    
     if (redisHealthy) {
       try {
-        queueStats = await this.queueService.getAllQueueStats();
+        const stats = await this.queueService.getAllQueueStats();
+        queueStats = stats || [];
       } catch {
-        // Queue stats not critical for health check
+        queueStats = [];
       }
     }
 

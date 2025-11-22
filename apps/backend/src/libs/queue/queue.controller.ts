@@ -1,9 +1,12 @@
 import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 
+import { Public } from '../../auth/decorators/public.decorator';
+
 import { QueueName } from './queue.constants';
 import { QueueService } from './queue.service';
 
 @Controller('queues')
+@Public() // Queue endpoints are public for now - add auth later if needed
 export class QueueController {
   constructor(private readonly queueService: QueueService) {}
 
@@ -29,7 +32,7 @@ export class QueueController {
   @Post(':queueName/jobs')
   async addJob(
     @Param('queueName') queueName: QueueName,
-    @Body() body: { type: string; data: any; options?: any }
+    @Body() body: { type: string; data: Record<string, unknown>; options?: Record<string, unknown> }
   ) {
     const job = await this.queueService.addJob(queueName, body.type, body.data, body.options);
     

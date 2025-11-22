@@ -1,12 +1,20 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 import { Text } from '@/components/atoms';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function DashboardPage() {
+  const router = useRouter();
   const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/login');
+  };
 
   return (
     <div className="min-h-screen p-8">
@@ -14,9 +22,9 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between">
           <div>
             <Text variant="h1">Dashboard</Text>
-            <Text variant="muted">Welcome back{user?.email ? `, ${user.email}` : ''}!</Text>
+            <Text variant="muted">Welcome back{user?.name || user?.email ? `, ${user.name || user.email}` : ''}!</Text>
           </div>
-          <Button variant="outline" onClick={logout}>
+          <Button variant="outline" onClick={handleLogout}>
             Logout
           </Button>
         </div>
