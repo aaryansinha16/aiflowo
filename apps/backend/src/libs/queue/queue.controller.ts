@@ -1,9 +1,12 @@
 import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 
+import { Public } from '../../auth/decorators/public.decorator';
+
 import { QueueName } from './queue.constants';
 import { QueueService } from './queue.service';
 
 @Controller('queues')
+@Public() // Queue endpoints are public for now - add auth later if needed
 export class QueueController {
   constructor(private readonly queueService: QueueService) {}
 
