@@ -15,6 +15,8 @@ export interface ToolResult<T = any> {
   success: boolean;
   data: T | null;
   error: ToolError | null;
+  message?: string; // User-facing message for display (optional but recommended)
+  summary?: string; // Alternative summary field (fallback)
   metadata?: ToolExecutionMetadata;
 }
 

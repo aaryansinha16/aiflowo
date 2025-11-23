@@ -314,6 +314,38 @@ export function getToolDescriptions(): string {
  */
 export function getExamplePlan(intent: IntentType): string {
   const examples: Record<IntentType, string> = {
+    [IntentType.GET_WEATHER]: JSON.stringify(
+      {
+        intent: 'get_weather',
+        steps: [
+          {
+            id: 'step_1',
+            tool: 'get_weather',
+            params: { location: 'San Francisco', units: 'celsius' },
+            description: 'Get current weather information',
+          },
+        ],
+        metadata: { complexity: 'simple', totalSteps: 1 },
+      },
+      null,
+      2
+    ),
+    [IntentType.CALCULATE]: JSON.stringify(
+      {
+        intent: 'calculate',
+        steps: [
+          {
+            id: 'step_1',
+            tool: 'calculate',
+            params: { expression: '25 * 4' },
+            description: 'Perform calculation',
+          },
+        ],
+        metadata: { complexity: 'simple', totalSteps: 1 },
+      },
+      null,
+      2
+    ),
     [IntentType.FLIGHT_SEARCH]: JSON.stringify(
       {
         intent: 'flight_search',

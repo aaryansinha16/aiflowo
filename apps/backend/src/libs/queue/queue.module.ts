@@ -6,6 +6,7 @@ import { BrowserProcessor } from './processors/browser.processor';
 import { EmailProcessor } from './processors/email.processor';
 import { MediaProcessor } from './processors/media.processor';
 import { TaskProcessor } from './processors/task.processor';
+import { QueueName } from './queue.constants';
 import { QueueController } from './queue.controller';
 import { QueueService } from './queue.service';
 
@@ -23,6 +24,13 @@ import { QueueService } from './queue.service';
       }),
       inject: [ConfigService],
     }),
+    // Register all queues
+    BullModule.registerQueue(
+      { name: QueueName.TASK },
+      { name: QueueName.BROWSER },
+      { name: QueueName.EMAIL },
+      { name: QueueName.MEDIA },
+    ),
   ],
   providers: [
     QueueService,

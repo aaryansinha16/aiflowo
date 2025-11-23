@@ -12,6 +12,7 @@ import { BrowserActionHandler } from './handlers/browser/browser-action.handler'
 import { ExtractDataHandler } from './handlers/browser/extract-data.handler';
 import { NavigateToHandler } from './handlers/browser/navigate-to.handler';
 import { TakeScreenshotHandler } from './handlers/browser/take-screenshot.handler';
+import { CalculateHandler } from './handlers/calculator/calculate.handler';
 import { BookFlightHandler } from './handlers/flight/book-flight.handler';
 import { SearchFlightsHandler } from './handlers/flight/search-flights.handler';
 import { AnalyzeFormHandler } from './handlers/form/analyze-form.handler';
@@ -25,6 +26,7 @@ import { SchedulePostHandler } from './handlers/social/schedule-post.handler';
 import { CheckCompletionHandler } from './handlers/validation/check-completion.handler';
 import { ValidateResultsHandler } from './handlers/validation/validate-results.handler';
 import { VerifyBookingHandler } from './handlers/validation/verify-booking.handler';
+import { GetWeatherHandler } from './handlers/weather/get-weather.handler';
 import { ToolHandlerRegistry } from './registry/tool-handler-registry';
 import { ToolsController } from './tools.controller';
 
@@ -34,6 +36,10 @@ import { ToolsController } from './tools.controller';
   providers: [
     ToolHandlerRegistry,
     ToolExecutorService,
+    
+    // Test/Utility handlers
+    GetWeatherHandler,
+    CalculateHandler,
     
     // Flight handlers
     SearchFlightsHandler,
@@ -69,6 +75,8 @@ import { ToolsController } from './tools.controller';
 export class ToolsModule implements OnModuleInit {
   constructor(
     private readonly registry: ToolHandlerRegistry,
+    private readonly getWeatherHandler: GetWeatherHandler,
+    private readonly calculateHandler: CalculateHandler,
     // Flight handlers
     private readonly searchFlightsHandler: SearchFlightsHandler,
     private readonly bookFlightHandler: BookFlightHandler,
@@ -97,6 +105,9 @@ export class ToolsModule implements OnModuleInit {
   onModuleInit() {
     // Register all handlers
     this.registry.registerHandlers([
+      // Test/Utility handlers
+      this.getWeatherHandler,
+      this.calculateHandler,
       // Flight handlers
       this.searchFlightsHandler,
       this.bookFlightHandler,

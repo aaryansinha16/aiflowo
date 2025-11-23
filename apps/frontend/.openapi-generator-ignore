@@ -1,0 +1,9 @@
+# OpenAPI Generator Ignore
+# Don't overwrite these files on regeneration
+
+# Custom modifications
+README.md
+
+# Git files
+.git
+.gitignore

@@ -9,6 +9,10 @@ import { z } from 'zod';
  * Available tool names
  */
 export enum ToolName {
+  // Test/Utility tools
+  GET_WEATHER = 'get_weather',
+  CALCULATE = 'calculate',
+  
   // Flight tools
   SEARCH_FLIGHTS = 'search_flights',
   BOOK_FLIGHT = 'book_flight',
@@ -42,6 +46,16 @@ export enum ToolName {
 /**
  * Tool parameter schemas
  */
+
+// Test/Utility tool parameters
+export const GetWeatherParamsSchema = z.object({
+  location: z.string().describe('City name or location'),
+  units: z.enum(['celsius', 'fahrenheit']).optional().default('celsius'),
+});
+
+export const CalculateParamsSchema = z.object({
+  expression: z.string().describe('Mathematical expression to evaluate'),
+});
 
 // Flight tool parameters
 export const SearchFlightsParamsSchema = z.object({
@@ -177,7 +191,7 @@ export const VerifyBookingParamsSchema = z.object({
 export interface ToolDefinition {
   name: ToolName;
   description: string;
-  category: 'flight' | 'job' | 'form' | 'social' | 'browser' | 'validation';
+  category: 'utility' | 'flight' | 'job' | 'form' | 'social' | 'browser' | 'validation';
   paramsSchema: z.ZodType<any>;
   requiresAuth?: boolean;
   isAsync?: boolean;
@@ -187,6 +201,22 @@ export interface ToolDefinition {
  * Tool registry - all available tools
  */
 export const TOOL_REGISTRY: Record<ToolName, ToolDefinition> = {
+  // Test/Utility tools
+  [ToolName.GET_WEATHER]: {
+    name: ToolName.GET_WEATHER,
+    description: 'Get current weather information for a location',
+    category: 'utility',
+    paramsSchema: GetWeatherParamsSchema,
+    isAsync: true,
+  },
+  [ToolName.CALCULATE]: {
+    name: ToolName.CALCULATE,
+    description: 'Perform mathematical calculations',
+    category: 'utility',
+    paramsSchema: CalculateParamsSchema,
+    isAsync: false,
+  },
+  
   // Flight tools
   [ToolName.SEARCH_FLIGHTS]: {
     name: ToolName.SEARCH_FLIGHTS,
@@ -326,6 +356,8 @@ export const TOOL_REGISTRY: Record<ToolName, ToolDefinition> = {
 /**
  * Type exports
  */
+export type GetWeatherParams = z.infer<typeof GetWeatherParamsSchema>;
+export type CalculateParams = z.infer<typeof CalculateParamsSchema>;
 export type SearchFlightsParams = z.infer<typeof SearchFlightsParamsSchema>;
 export type BookFlightParams = z.infer<typeof BookFlightParamsSchema>;
 export type SearchJobsParams = z.infer<typeof SearchJobsParamsSchema>;
