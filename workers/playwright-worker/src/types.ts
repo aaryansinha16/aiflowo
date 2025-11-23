@@ -7,6 +7,8 @@ export enum BrowserJobType {
   FILL_FORM = 'fill_form',
   CLICK = 'click',
   SEARCH = 'search',
+  TYPE = 'type',
+  WAIT = 'wait',
 }
 
 /**
@@ -73,6 +75,33 @@ export interface SearchJobData extends BaseJobData {
 }
 
 /**
+ * Type job data - for human-like typing
+ */
+export interface TypeJobData extends BaseJobData {
+  type: BrowserJobType.TYPE;
+  url: string;
+  selector: string;
+  text: string;
+  delay?: number; // Delay between keystrokes in ms (default: 0)
+  clearFirst?: boolean; // Clear existing text before typing
+  pressKey?: 'Enter' | 'Tab' | 'Escape' | 'ArrowDown' | 'ArrowUp'; // Press special key after typing
+}
+
+/**
+ * Wait job data - for waiting on dynamic content
+ */
+export interface WaitJobData extends BaseJobData {
+  type: BrowserJobType.WAIT;
+  url: string;
+  waitType: 'selector' | 'text' | 'state' | 'networkidle' | 'timeout' | 'function';
+  selector?: string; // Required for 'selector' and 'state' waitTypes
+  text?: string; // Required for 'text' waitType
+  state?: 'visible' | 'hidden' | 'attached' | 'detached'; // For 'state' waitType
+  timeout?: number; // Timeout in ms (default: 30000)
+  customFunction?: string; // JavaScript function for 'function' waitType
+}
+
+/**
  * Union type of all job data
  */
 export type BrowserJob =
@@ -80,7 +109,9 @@ export type BrowserJob =
   | ScreenshotJobData
   | ClickJobData
   | FillFormJobData
-  | SearchJobData;
+  | SearchJobData
+  | TypeJobData
+  | WaitJobData;
 
 /**
  * Job result interface

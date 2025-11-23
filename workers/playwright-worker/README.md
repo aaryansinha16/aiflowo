@@ -77,6 +77,37 @@ Perform a search on a website.
 }
 ```
 
+### 6. Type (`TYPE`)
+Type text into an input field with human-like behavior.
+
+```typescript
+{
+  type: 'type',
+  url: 'https://example.com/form',
+  selector: '#username',
+  text: 'john@example.com',
+  delay: 50, // optional, ms between keystrokes (default: 0)
+  clearFirst: true, // optional, clear existing text first
+  pressKey: 'Enter' // optional, press key after typing (Enter, Tab, Escape, etc.)
+}
+```
+
+### 7. Wait (`WAIT`)
+Wait for various page conditions before proceeding.
+
+```typescript
+{
+  type: 'wait',
+  url: 'https://example.com',
+  waitType: 'selector', // 'selector' | 'text' | 'state' | 'networkidle' | 'timeout' | 'function'
+  selector: '.dynamic-content', // required for 'selector' and 'state'
+  text: 'Loading complete', // required for 'text'
+  state: 'visible', // optional, for 'state' type: 'visible' | 'hidden' | 'attached' | 'detached'
+  timeout: 10000, // optional, timeout in ms (default: 30000)
+  customFunction: 'document.querySelector(".spinner") === null' // for 'function' type
+}
+```
+
 ## Environment Variables
 
 ```env
@@ -199,6 +230,8 @@ Response:
 │  - Click        │
 │  - Fill Form    │
 │  - Search       │
+│  - Type         │
+│  - Wait         │
 └─────────────────┘
 ```
 
