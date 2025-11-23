@@ -23,6 +23,8 @@ export enum BrowserJobType {
   FILL_FORM = 'fill_form',
   CLICK = 'click',
   SEARCH = 'search',
+  TYPE = 'type',
+  WAIT = 'wait',
 }
 
 export enum MediaJobType {

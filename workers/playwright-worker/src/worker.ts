@@ -9,6 +9,8 @@ import {
   handleClick,
   handleFillForm,
   handleSearch,
+  handleType,
+  handleWait,
 } from './handlers';
 import { logger } from './logger';
 import { BrowserJob, BrowserJobType, JobResult } from './types';
@@ -113,6 +115,14 @@ export class PlaywrightWorker {
 
         case BrowserJobType.SEARCH:
           result = await handleSearch(page, job.data);
+          break;
+
+        case BrowserJobType.TYPE:
+          result = await handleType(page, job.data);
+          break;
+
+        case BrowserJobType.WAIT:
+          result = await handleWait(page, job.data);
           break;
 
         default:

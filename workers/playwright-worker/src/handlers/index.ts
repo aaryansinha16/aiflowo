@@ -3,3 +3,5 @@ export { handleScreenshot } from './screenshot.handler';
 export { handleClick } from './click.handler';
 export { handleFillForm } from './fill-form.handler';
 export { handleSearch } from './search.handler';
+export { handleType } from './type.handler';
+export { handleWait } from './wait.handler';
