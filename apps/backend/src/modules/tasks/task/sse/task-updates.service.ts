@@ -49,6 +49,7 @@ export class TaskUpdatesService {
     if (stream && !stream.closed) {
       const event: TaskUpdateEvent = {
         taskId,
+        status: update.status || '',
         timestamp: new Date().toISOString(),
         ...update,
       };
@@ -77,12 +78,17 @@ export class TaskUpdatesService {
   private setupEventListeners() {
     // Listen to task status changes
     this.eventEmitter.on('task.status.changed', (data: any) => {
-      this.sendUpdate(data.taskId, {
-        status: data.status,
+      const event: TaskUpdateEvent = {
+        taskId: data.taskId,
+        status: data.status || 'RUNNING',
         currentStep: data.currentStep,
         totalSteps: data.totalSteps,
-        message: `Task status changed to ${data.status}`,
-      });
+        message: data.message,
+        result: data.result,
+        error: data.error,
+        timestamp: new Date().toISOString(),
+      };
+      this.sendUpdate(data.taskId, event);
     });
 
     // Listen to task step completion

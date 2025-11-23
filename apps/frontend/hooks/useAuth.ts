@@ -49,37 +49,39 @@ export const useAuth = create<AuthState>()(
       sendMagicLink: async (email) => {
         try {
           const { data, error } = await apiClient.POST('/api/auth/magic-link/send', {
-            body: { email },
+            body: { email } as any,
           });
-
+          
           if (error) {
-            throw new Error(error.message || 'Failed to send magic link');
+            throw new Error('Failed to send magic link');
           }
-
-          return data;
-        } catch (error) {
-          console.error('Send magic link error:', error);
-          throw error;
+          
+          return { success: true, message: 'Magic link sent successfully' };
+        } catch (err) {
+          console.error('Send magic link error:', err);
+          throw err;
         }
       },
 
       verifyMagicLink: async (token) => {
         try {
           const { data, error } = await apiClient.POST('/api/auth/magic-link/verify', {
-            body: { token },
+            body: { token } as any,
           });
 
           if (error) {
-            throw new Error(error.message || 'Failed to verify magic link');
+            throw new Error((error as any).message || 'Failed to verify magic link');
           }
 
           // Store token and user
-          set({
-            token: data.accessToken,
-            user: data.user,
-            isAuthenticated: true,
-            isLoading: false,
-          });
+          if (data) {
+            set({
+              token: (data as any).accessToken,
+              user: (data as any).user,
+              isAuthenticated: true,
+              isLoading: false,
+            });
+          }
         } catch (error) {
           console.error('Verify magic link error:', error);
           throw error;
@@ -88,19 +90,21 @@ export const useAuth = create<AuthState>()(
 
       register: async (registerData) => {
         try {
-          const { data, error } = await apiClient.POST('/api/auth/register', {
-            body: registerData,
+          const { data, error } = await (apiClient.POST as any)('/api/auth/register', {
+            body: { email: registerData.email, password: registerData.password, name: registerData.name },
           });
 
           if (error) {
-            throw new Error(error.message || 'Registration failed');
+            throw new Error((error as any).message || 'Registration failed');
           }
 
-          set({
-            token: data.accessToken,
-            user: data.user,
-            isAuthenticated: true,
-          });
+          if (data) {
+            set({
+              token: (data as any).accessToken,
+              user: (data as any).user,
+              isAuthenticated: true,
+            });
+          }
         } catch (error) {
           console.error('Register error:', error);
           throw error;

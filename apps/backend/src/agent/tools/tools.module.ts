@@ -9,10 +9,10 @@ import { LLMModule } from '../llm/llm.module';
 
 import { ToolExecutorService } from './executor/tool-executor.service';
 import { BrowserActionHandler } from './handlers/browser/browser-action.handler';
-import { CalculateHandler } from './handlers/calculator/calculate.handler';
 import { ExtractDataHandler } from './handlers/browser/extract-data.handler';
 import { NavigateToHandler } from './handlers/browser/navigate-to.handler';
 import { TakeScreenshotHandler } from './handlers/browser/take-screenshot.handler';
+import { CalculateHandler } from './handlers/calculator/calculate.handler';
 import { BookFlightHandler } from './handlers/flight/book-flight.handler';
 import { SearchFlightsHandler } from './handlers/flight/search-flights.handler';
 import { AnalyzeFormHandler } from './handlers/form/analyze-form.handler';

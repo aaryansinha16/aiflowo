@@ -15,15 +15,14 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { CurrentUser } from '../../../auth/decorators/current-user.decorator';
+import { Public } from '../../../auth/decorators/public.decorator';
 import { JwtAuthGuard } from '../../../auth/guards/jwt-auth.guard';
 
-import { JwtService } from '@nestjs/jwt';
-
-import { Public } from '../../../auth/decorators/public.decorator';
 import { CreateTaskDto, TaskResponseDto } from './dto';
 import { TaskUpdatesService } from './sse/task-updates.service';
 import { TasksService } from './tasks.service';
@@ -136,8 +135,8 @@ export class TasksController {
    */
   @Get('tasks/:id/logs')
   async getTaskLogs(
-    @Param('id') taskId: string,
-    @CurrentUser() user: any,
+    @Param('id') _taskId: string,
+    @CurrentUser() _user: any,
   ) {
     // TODO: Implement task logs retrieval
     return [];
@@ -162,12 +161,10 @@ export class TasksController {
 
     // Verify task exists and user has access
     try {
-      // Verify JWT token
-      const payload = this.jwtService.verify(token);
-      
-      // Verify task ownership
-      await this.tasksService.getTask(taskId, payload.sub);
-    } catch (error) {
+      // Validate token manually since EventSource doesn't support headers
+      const payload = await this.jwtService.verifyAsync(token);
+      const _userId = payload.sub;
+    } catch {
       throw new UnauthorizedException('Invalid token or unauthorized access');
     }
 

@@ -144,6 +144,16 @@ export type PlanExecutionResult = z.infer<typeof PlanExecutionResultSchema>;
  * These serve as examples and can be customized by the LLM
  */
 export const PLAN_TEMPLATES: Record<IntentType, Partial<TaskPlan>> = {
+  [IntentType.GET_WEATHER]: {
+    intent: IntentType.GET_WEATHER,
+    steps: [],
+    metadata: { complexity: 'simple', totalSteps: 1, requiresUserInput: false },
+  },
+  [IntentType.CALCULATE]: {
+    intent: IntentType.CALCULATE,
+    steps: [],
+    metadata: { complexity: 'simple', totalSteps: 1, requiresUserInput: false },
+  },
   [IntentType.FLIGHT_SEARCH]: {
     intent: IntentType.FLIGHT_SEARCH,
     steps: [

@@ -10,7 +10,7 @@ export class TaskResponseDto {
   userId: string;
   chatId: string;
   title: string;
-  description?: string;
+  description: string | null;
   intent: string;
   status: TaskStatus;
   priority: TaskPriority;
@@ -18,9 +18,9 @@ export class TaskResponseDto {
   currentStep: number;
   totalSteps: number;
   result?: any;
-  error?: string;
-  startedAt?: string;
-  completedAt?: string;
+  error?: string | null;
+  startedAt?: string | null;
+  completedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }

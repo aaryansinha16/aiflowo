@@ -4,12 +4,10 @@
  */
 
 import { Global, Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { JwtModule } from '@nestjs/jwt';
 
 import { AgentModule } from '../../agent/agent.module';
-import { PrismaModule } from '../../libs/prisma';
-import { QueueModule } from '../../libs/queue';
 
 import { ChatsController } from './chat/chats.controller';
 import { ChatsService } from './chat/chats.service';

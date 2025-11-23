@@ -339,7 +339,7 @@ export class TasksService {
 
     this.logger.log(`Task ${taskId} completed`);
 
-    return completedTask;
+    return this.mapToResponse(completedTask);
   }
 
   /**
@@ -380,7 +380,7 @@ export class TasksService {
 
     this.logger.error(`Task ${taskId} failed: ${error}`);
 
-    return failedTask;
+    return this.mapToResponse(failedTask);
   }
 
   /**
@@ -571,7 +571,7 @@ Title:`;
       userId: task.userId,
       chatId: task.chatId,
       title: task.title,
-      description: task.description || undefined,
+      description: task.description,
       intent: task.intent,
       status: task.status,
       priority: task.priority,

@@ -10,8 +10,10 @@ export interface Chat {
   id: string;
   title: string;
   lastMessage?: string;
-  lastActivity: string;
-  taskCount: number;
+  lastActivity?: string;
+  taskCount?: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ChatSidebarProps {
@@ -72,10 +74,9 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
         {/* Search */}
         <SearchBar
           value={searchQuery}
-          onChange={setSearchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           onClear={() => setSearchQuery('')}
           placeholder="Search chats..."
-          icon={Search}
         />
       </div>
 
@@ -114,9 +115,9 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                 key={chat.id}
                 id={chat.id}
                 title={chat.title}
-                lastMessage={chat.lastMessage}
-                lastActivity={chat.lastActivity}
-                taskCount={chat.taskCount}
+                lastMessage={chat.lastMessage || ''}
+                lastActivity={chat.lastActivity || chat.updatedAt}
+                taskCount={chat.taskCount || 0}
                 isActive={chat.id === activeChat}
                 onClick={() => onChatSelect(chat.id)}
                 onAction={() => onChatAction?.(chat.id)}

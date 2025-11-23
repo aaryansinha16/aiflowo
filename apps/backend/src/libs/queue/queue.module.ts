@@ -6,9 +6,9 @@ import { BrowserProcessor } from './processors/browser.processor';
 import { EmailProcessor } from './processors/email.processor';
 import { MediaProcessor } from './processors/media.processor';
 import { TaskProcessor } from './processors/task.processor';
+import { QueueName } from './queue.constants';
 import { QueueController } from './queue.controller';
 import { QueueService } from './queue.service';
-import { QueueName } from './queue.constants';
 
 @Global()
 @Module({

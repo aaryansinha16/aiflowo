@@ -1,3 +1,3 @@
 export * from './api-types';
 export * from './tool-schemas';
-export * from './types';
+// Note: types.ts is not exported to avoid conflicts with api-types.ts

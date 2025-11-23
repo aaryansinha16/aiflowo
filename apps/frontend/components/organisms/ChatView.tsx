@@ -6,6 +6,16 @@ import { ChatInput, ChatMessage, EmptyState } from '@/components/molecules';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
+export interface Chat {
+  id: string;
+  title: string;
+  lastMessage?: string;
+  lastActivity?: string;
+  taskCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Message {
   id: string;
   role: 'user' | 'assistant' | 'system';

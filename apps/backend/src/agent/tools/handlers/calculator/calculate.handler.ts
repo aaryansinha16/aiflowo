@@ -6,17 +6,17 @@
 import { Injectable } from '@nestjs/common';
 import { z } from 'zod';
 
-import { BaseToolHandler } from '../base/base-tool-handler';
+import { ToolErrorCode, createToolError } from '../../../types/tool-error.types';
+import type { ExecutionContext, ToolResult } from '../../../types/tool-execution.types';
 import { ToolName } from '../../../types/tools.types';
-import type { ExecutionContext } from '../../../types/tool-execution.types';
-import type { ToolDefinition, ToolResult } from '../../types/tool.types';
+import { BaseToolHandler } from '../base/base-tool-handler';
 
 // Parameter schema
-const CalculateParamsSchema = z.object({
+const _CalculateParamsSchema = z.object({
   expression: z.string().min(1).describe('Mathematical expression to evaluate (e.g., "2 + 2" or "10 * 5")'),
 });
 
-type CalculateParams = z.infer<typeof CalculateParamsSchema>;
+type CalculateParams = z.infer<typeof _CalculateParamsSchema>;
 
 @Injectable()
 export class CalculateHandler extends BaseToolHandler<CalculateParams> {
@@ -25,25 +25,11 @@ export class CalculateHandler extends BaseToolHandler<CalculateParams> {
   }
 
   readonly description = 'Perform mathematical calculations';
-  readonly version = '1.0.0';
   readonly category = 'utility';
 
-  getDefinition(): ToolDefinition {
-    return {
-      name: this.name,
-      description: this.description,
-      version: this.version,
-      category: this.category,
-      parameters: CalculateParamsSchema,
-      examples: [
-        { expression: '2 + 2' },
-        { expression: '10 * 5 + 3' },
-        { expression: '100 / 4' },
-      ],
-    };
-  }
+  // Not needed - base class handles tool definition
 
-  protected async executeImpl(params: CalculateParams, context: ExecutionContext): Promise<ToolResult> {
+  protected async executeImpl(params: CalculateParams, _context: ExecutionContext): Promise<ToolResult> {
     this.logger.log(`Calculating: ${params.expression}`);
 
     // Simulate processing time
@@ -63,17 +49,16 @@ export class CalculateHandler extends BaseToolHandler<CalculateParams> {
           formatted: `${params.expression} = ${result}`,
         },
         message: `${params.expression} = ${result}`, // User-facing message for display
-        metadata: {
-          timestamp: new Date().toISOString(),
-        },
+        error: null,
       };
-    } catch (error) {
+    } catch (_error: any) {
       return {
         success: false,
-        error: {
-          code: 'CALCULATION_ERROR',
-          message: `Failed to calculate: ${error.message}`,
-        },
+        data: null,
+        error: createToolError(
+          ToolErrorCode.INVALID_PARAMS,
+          `Failed to calculate: ${_error.message}`
+        ),
       };
     }
   }
@@ -101,7 +86,7 @@ export class CalculateHandler extends BaseToolHandler<CalculateParams> {
       }
 
       return result;
-    } catch (error) {
+    } catch {
       throw new Error('Failed to evaluate expression');
     }
   }

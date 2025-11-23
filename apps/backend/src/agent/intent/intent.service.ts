@@ -85,10 +85,12 @@ export class IntentService {
     missingFields: string[];
   } {
     const requiredFields: Record<IntentType, string[]> = {
-      [IntentType.FLIGHT_SEARCH]: ['from', 'to', 'date'],
-      [IntentType.BOOK_FLIGHT]: ['flightOptionId', 'passengers'],
+      [IntentType.GET_WEATHER]: ['location'],
+      [IntentType.CALCULATE]: ['expression'],
+      [IntentType.FLIGHT_SEARCH]: ['from', 'to'],
+      [IntentType.BOOK_FLIGHT]: ['flightOptionId'],
       [IntentType.APPLY_JOB]: ['jobUrl'],
-      [IntentType.FILL_FORM]: ['url'],
+      [IntentType.FILL_FORM]: ['url', 'fields'],
       [IntentType.POST_SOCIAL]: ['platform', 'caption'],
       [IntentType.BROWSER_ACTION]: ['url'],
       [IntentType.UNKNOWN]: [],

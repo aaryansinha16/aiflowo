@@ -222,11 +222,9 @@ export default function ChatPage() {
       
       const { data: chat, error } = await apiClient.GET('/api/chats/{id}', {
         params: {
-          path: {
-            id: chatId,
-          },
+          path: { id: chatId },
         },
-      });
+      }) as { data: any; error: any };
       
       if (error) {
         console.error('Failed to load messages:', error);
@@ -238,7 +236,13 @@ export default function ChatPage() {
       const taskMessages: Message[] = [];
       const runningTasks: string[] = [];
       
-      chat.tasks.forEach((task) => {
+      if (!chat || !chat.tasks) {
+        setMessages([]);
+        setActiveTasks([]);
+        return;
+      }
+      
+      chat.tasks.forEach((task: any) => {
         // Add user intent as user message
         taskMessages.push({
           id: `user-${task.id}`,
@@ -306,8 +310,10 @@ export default function ChatPage() {
         return;
       }
       
-      setChats((prev) => [newChat, ...prev]);
-      setActiveChat(newChat.id);
+      if (newChat) {
+        setChats((prev) => [newChat, ...prev]);
+        setActiveChat(newChat.id);
+      }
     } catch (err) {
       console.error('Failed to create chat:', err);
       setError('Failed to create new chat');
@@ -333,7 +339,7 @@ export default function ChatPage() {
       setMessages((prev) => [...prev, tempUserMessage]);
 
       // Create task
-      const { data: task, error: taskError } = await apiClient.POST('/api/chats/{chatId}/tasks', {
+      const { data: newTask, error: taskError } = await apiClient.POST('/api/chats/{chatId}/tasks', {
         params: {
           path: {
             chatId: activeChat,
@@ -342,10 +348,10 @@ export default function ChatPage() {
         body: {
           intent: message,
           priority: 'MEDIUM',
-        },
+        } as any,
       });
       
-      if (taskError) {
+      if (taskError || !newTask) {
         throw new Error('Failed to create task');
       }
 
@@ -388,7 +394,9 @@ export default function ChatPage() {
             title: chat.title,
             lastMessage: chat.lastMessage,
             lastActivity: chat.lastActivity,
-            taskCount: chat.taskCount,
+            taskCount: chat.taskCount || 0,
+            createdAt: chat.createdAt,
+            updatedAt: chat.updatedAt,
           }))}
           activeChat={activeChat}
           onChatSelect={handleChatSelect}

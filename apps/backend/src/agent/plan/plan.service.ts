@@ -289,14 +289,13 @@ export class PlanService {
     switch (intent) {
       case IntentType.GET_WEATHER:
         return {
-          intent,
-          description: `Get weather for ${params.location || 'specified location'}`,
+          intent: IntentType.GET_WEATHER,
           steps: [
             {
               id: 'step_1',
               tool: ToolName.GET_WEATHER,
               params: {
-                location: params.location || 'San Francisco',
+                location: params.location || '',
                 units: params.units || 'celsius',
               },
               description: 'Get current weather information',
@@ -311,8 +310,7 @@ export class PlanService {
 
       case IntentType.CALCULATE:
         return {
-          intent,
-          description: `Calculate: ${params.expression || 'expression'}`,
+          intent: IntentType.CALCULATE,
           steps: [
             {
               id: 'step_1',

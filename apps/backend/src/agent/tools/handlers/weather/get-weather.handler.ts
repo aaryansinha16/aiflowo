@@ -6,18 +6,17 @@
 import { Injectable } from '@nestjs/common';
 import { z } from 'zod';
 
-import { BaseToolHandler } from '../base/base-tool-handler';
+import type { ExecutionContext, ToolResult } from '../../../types/tool-execution.types';
 import { ToolName } from '../../../types/tools.types';
-import type { ExecutionContext } from '../../../types/tool-execution.types';
-import type { ToolDefinition, ToolResult } from '../../types/tool.types';
+import { BaseToolHandler } from '../base/base-tool-handler';
 
 // Parameter schema
-const GetWeatherParamsSchema = z.object({
+const _GetWeatherParamsSchema = z.object({
   location: z.string().min(1).describe('City name or location (e.g., "New York" or "London, UK")'),
   units: z.enum(['celsius', 'fahrenheit']).optional().default('celsius').describe('Temperature units'),
 });
 
-type GetWeatherParams = z.infer<typeof GetWeatherParamsSchema>;
+type GetWeatherParams = z.infer<typeof _GetWeatherParamsSchema>;
 
 @Injectable()
 export class GetWeatherHandler extends BaseToolHandler<GetWeatherParams> {
@@ -26,30 +25,11 @@ export class GetWeatherHandler extends BaseToolHandler<GetWeatherParams> {
   }
 
   readonly description = 'Get current weather information for a location';
-  readonly version = '1.0.0';
   readonly category = 'utility';
 
-  getDefinition(): ToolDefinition {
-    return {
-      name: this.name,
-      description: this.description,
-      version: this.version,
-      category: this.category,
-      parameters: GetWeatherParamsSchema,
-      examples: [
-        {
-          location: 'San Francisco',
-          units: 'fahrenheit',
-        },
-        {
-          location: 'London, UK',
-          units: 'celsius',
-        },
-      ],
-    };
-  }
+  // Not needed - base class handles tool definition
 
-  protected async executeImpl(params: GetWeatherParams, context: ExecutionContext): Promise<ToolResult> {
+  protected async executeImpl(params: GetWeatherParams, _context: ExecutionContext): Promise<ToolResult> {
     this.logger.log(`Getting weather for ${params.location} in ${params.units}`);
 
     // Simulate API call delay
@@ -67,11 +47,7 @@ export class GetWeatherHandler extends BaseToolHandler<GetWeatherParams> {
       success: true,
       data: mockWeatherData,
       message, // User-facing message for display
-      metadata: {
-        location: params.location,
-        units: params.units,
-        timestamp: new Date().toISOString(),
-      },
+      error: null,
     };
   }
 
