@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 
+import { AgentModule } from './agent';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule, JwtAuthGuard } from './auth';
@@ -19,6 +20,7 @@ import { ProfileModule } from './profile';
     QueueModule,
     AuthModule,
     ProfileModule,
+    AgentModule,
   ],
   controllers: [AppController],
   providers: [

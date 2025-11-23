@@ -1,0 +1,12 @@
+# Integration tests (separate from source code)
+test/
+
+# Build outputs
+dist/
+dist-test/
+
+# Dependencies
+node_modules/
+
+# Coverage
+coverage/
