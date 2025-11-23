@@ -5,6 +5,8 @@ export * from './intent/intent.service';
 export * from './intent/intent.module';
 export * from './plan/plan.service';
 export * from './plan/plan.module';
+export * from './tools/tools.module';
+export * from './tools/executor/tool-executor.service';
 
 // Type exports - avoid duplicates
 export { IntentType, IntentClassification, IntentClassificationSchema } from './types/intent.types';
@@ -31,3 +33,11 @@ export type {
   VerifyBookingParams,
   ToolDefinition,
 } from './types/tools.types';
+
+// Types - Tool Execution
+export type {
+  ToolResult,
+  ExecutionContext,
+  PlanExecutionResult,
+  StepExecutionResult,
+} from './types/tool-execution.types';
