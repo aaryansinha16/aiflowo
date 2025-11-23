@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "prisma generate",
+    "prebuild": "prisma generate",
     "dev": "ts-node-dev --respawn --transpile-only src/main.ts",
     "build": "nest build",
     "start": "node dist/main",
