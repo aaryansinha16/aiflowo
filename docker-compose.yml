@@ -49,6 +49,38 @@ services:
       timeout: 20s
       retries: 3
 
+  playwright-worker:
+    build:
+      context: ./workers/playwright-worker
+      dockerfile: Dockerfile
+    container_name: aiflowo-playwright-worker
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      WORKER_CONCURRENCY: 2
+      BROWSER_HEADLESS: 'true'
+      BROWSER_TIMEOUT: 30000
+      LOG_LEVEL: info
+      NODE_ENV: production
+      HEALTH_CHECK_PORT: 3001
+    ports:
+      - '3001:3001'
+    depends_on:
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3001/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+
 volumes:
   postgres_data:
   redis_data:
