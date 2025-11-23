@@ -54,7 +54,14 @@ export class PlanService {
         new Date()
       );
 
-      // Call LLM with function calling
+      // Check if we have a simple template for this intent first
+      const templatePlan = this.getTemplatePlan(classification);
+      if (templatePlan) {
+        this.logger.log(`Using template plan for intent: ${classification.intent}`);
+        return templatePlan;
+      }
+
+      // Generate plan with LLM for complex tasks
       const completion = await this.llmService.complete(
         messages,
         [GENERATE_PLAN_FUNCTION],
@@ -271,6 +278,61 @@ export class PlanService {
         requiresUserInput: false,
       },
     };
+  }
+
+  /**
+   * Get template plan for simple intents (utility tools)
+   */
+  private getTemplatePlan(classification: IntentClassification): TaskPlan | null {
+    const { intent, params } = classification;
+
+    switch (intent) {
+      case IntentType.GET_WEATHER:
+        return {
+          intent,
+          description: `Get weather for ${params.location || 'specified location'}`,
+          steps: [
+            {
+              id: 'step_1',
+              tool: ToolName.GET_WEATHER,
+              params: {
+                location: params.location || 'San Francisco',
+                units: params.units || 'celsius',
+              },
+              description: 'Get current weather information',
+            },
+          ],
+          metadata: {
+            complexity: 'simple',
+            totalSteps: 1,
+            requiresUserInput: false,
+          },
+        };
+
+      case IntentType.CALCULATE:
+        return {
+          intent,
+          description: `Calculate: ${params.expression || 'expression'}`,
+          steps: [
+            {
+              id: 'step_1',
+              tool: ToolName.CALCULATE,
+              params: {
+                expression: params.expression || '0',
+              },
+              description: 'Perform calculation',
+            },
+          ],
+          metadata: {
+            complexity: 'simple',
+            totalSteps: 1,
+            requiresUserInput: false,
+          },
+        };
+
+      default:
+        return null;
+    }
   }
 
   /**

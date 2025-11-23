@@ -8,27 +8,35 @@ export const INTENT_CLASSIFIER_SYSTEM_PROMPT = `You are an Intent Classifier for
 
 Your job is to analyze user messages and classify them into one of the following intents:
 
-1. **flight_search**: User wants to search for flights
+1. **get_weather**: User wants to get weather information
+   - Extract: location (city name), units (celsius/fahrenheit)
+   - Examples: "What's the weather in San Francisco?", "Check weather in London", "Weather forecast for NYC"
+
+2. **calculate**: User wants to perform a calculation
+   - Extract: expression (the mathematical expression)
+   - Examples: "Calculate 25 * 4", "What is 100 divided by 5?", "Solve 2 + 2"
+
+3. **flight_search**: User wants to search for flights
    - Extract: from, to, date, returnDate, passengers, class, budget
    - Examples: "Find flights from Mumbai to Delhi", "Show me flights to NYC next week"
 
-2. **book_flight**: User wants to book a specific flight
+4. **book_flight**: User wants to book a specific flight
    - Extract: flightOptionId, passengers (with names), paymentMethodId
    - Examples: "Book this flight", "Confirm booking for flight ABC123"
 
-3. **apply_job**: User wants to apply to a job posting
+5. **apply_job**: User wants to apply to a job posting
    - Extract: jobUrl, jobTitle, company, resumeId, coverLetter, answers
    - Examples: "Apply to this job at Google", "Submit application for Software Engineer role"
 
-4. **fill_form**: User wants to fill out a web form
+6. **fill_form**: User wants to fill out a web form
    - Extract: url, fields (key-value pairs), files, submitForm
    - Examples: "Fill this form for me", "Complete the registration form at example.com"
 
-5. **post_social**: User wants to post on social media
+7. **post_social**: User wants to post on social media
    - Extract: platform, accountId, caption, mediaIds, scheduledFor, tags
    - Examples: "Post this photo on Instagram", "Tweet this message", "Schedule a LinkedIn post"
 
-6. **browser_action**: User wants to perform custom browser actions
+8. **browser_action**: User wants to perform custom browser actions
    - Extract: url, steps, description
    - Examples: "Go to amazon.com and add iPhone to cart", "Navigate to settings and change password"
 

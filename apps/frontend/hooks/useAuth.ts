@@ -3,8 +3,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-/* eslint-disable no-undef */
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+import { apiClient } from '@/lib/api-generated';
 
 interface User {
   id: string;
@@ -45,20 +44,16 @@ export const useAuth = create<AuthState>()(
 
       setUser: (user) => set({ user, isAuthenticated: !!user, isLoading: false }),
 
-      setToken: (token) => set({ token }),
+      setToken: (token) => set({ token, isLoading: false }),
 
       sendMagicLink: async (email) => {
         try {
-          const response = await fetch(`${API_URL}/auth/magic-link/send`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email }),
+          const { data, error } = await apiClient.POST('/api/auth/magic-link/send', {
+            body: { email },
           });
 
-          const data = await response.json();
-
-          if (!response.ok) {
-            throw new Error(data.message || 'Failed to send magic link');
+          if (error) {
+            throw new Error(error.message || 'Failed to send magic link');
           }
 
           return data;
@@ -70,16 +65,12 @@ export const useAuth = create<AuthState>()(
 
       verifyMagicLink: async (token) => {
         try {
-          const response = await fetch(`${API_URL}/auth/magic-link/verify`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token }),
+          const { data, error } = await apiClient.POST('/api/auth/magic-link/verify', {
+            body: { token },
           });
 
-          const data = await response.json();
-
-          if (!response.ok) {
-            throw new Error(data.message || 'Failed to verify magic link');
+          if (error) {
+            throw new Error(error.message || 'Failed to verify magic link');
           }
 
           // Store token and user
@@ -95,23 +86,19 @@ export const useAuth = create<AuthState>()(
         }
       },
 
-      register: async (data) => {
+      register: async (registerData) => {
         try {
-          const response = await fetch(`${API_URL}/auth/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
+          const { data, error } = await apiClient.POST('/api/auth/register', {
+            body: registerData,
           });
 
-          const result = await response.json();
-
-          if (!response.ok) {
-            throw new Error(result.message || 'Registration failed');
+          if (error) {
+            throw new Error(error.message || 'Registration failed');
           }
 
           set({
-            token: result.accessToken,
-            user: result.user,
+            token: data.accessToken,
+            user: data.user,
             isAuthenticated: true,
           });
         } catch (error) {
@@ -125,12 +112,7 @@ export const useAuth = create<AuthState>()(
           const token = get().token;
           
           if (token) {
-            await fetch(`${API_URL}/auth/logout`, {
-              method: 'POST',
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            });
+            await apiClient.POST('/api/auth/logout', {});
           }
         } catch (error) {
           console.error('Logout error:', error);
@@ -148,17 +130,12 @@ export const useAuth = create<AuthState>()(
             return;
           }
 
-          const response = await fetch(`${API_URL}/auth/me`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          const { data: user, error } = await apiClient.GET('/api/auth/me');
 
-          if (response.ok) {
-            const user = await response.json();
-            set({ user, isAuthenticated: true, isLoading: false });
-          } else {
+          if (error) {
             set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+          } else {
+            set({ user, isAuthenticated: true, isLoading: false });
           }
         } catch (error) {
           console.error('Check auth error:', error);

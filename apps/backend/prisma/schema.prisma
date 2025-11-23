@@ -25,6 +25,7 @@ model User {
 
   // Relations
   profile    UserProfile?
+  chats      Chat[] // NEW: User's conversations
   tasks      Task[]
   magicLinks MagicLink[]
   sessions   Session[]
@@ -43,22 +44,22 @@ model UserProfile {
   profilePicUrl String?
 
   // Travel Preferences (for flight booking tasks)
-  preferredAirlines  String[] // e.g., ["United", "Delta"]
-  preferredCabinClass String?  // e.g., "economy", "business"
-  frequentFlyerNumbers Json?    // { "United": "UA123", "Delta": "DL456" }
+  preferredAirlines    String[] // e.g., ["United", "Delta"]
+  preferredCabinClass  String? // e.g., "economy", "business"
+  frequentFlyerNumbers Json? // { "United": "UA123", "Delta": "DL456" }
 
   // Social Media Accounts (for social posting tasks)
   socialAccounts Json? // { "instagram": {...}, "twitter": {...} }
 
   // Professional Info (for job application tasks)
-  resumeUrl     String?
-  linkedInUrl   String?
-  githubUrl     String?
-  portfolioUrl  String?
+  resumeUrl    String?
+  linkedInUrl  String?
+  githubUrl    String?
+  portfolioUrl String?
 
   // Preferences
-  timezone      String   @default("UTC")
-  notifications Boolean  @default(true)
+  timezone      String  @default("UTC")
+  notifications Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -68,16 +69,16 @@ model UserProfile {
 }
 
 model MagicLink {
-  id        String   @id @default(cuid())
-  token     String   @unique
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(cuid())
+  token  String @unique
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   email     String
   expiresAt DateTime
-  used      Boolean  @default(false)
+  used      Boolean   @default(false)
   usedAt    DateTime?
-  
+
   createdAt DateTime @default(now())
 
   @@index([token])
@@ -87,13 +88,13 @@ model MagicLink {
 }
 
 model Session {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   token     String   @unique
   expiresAt DateTime
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -103,8 +104,31 @@ model Session {
 }
 
 // ============================================
-// Task Execution Models
+// Chat & Task Execution Models
 // ============================================
+
+model Chat {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Chat Details
+  title       String // Auto-generated or user-defined
+  summary     String? @db.Text // AI-generated summary
+  lastMessage String? @db.Text // Last user message for preview
+
+  // Relations
+  tasks Task[] // All tasks in this conversation
+
+  // Timestamps
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  lastActivity DateTime @default(now()) // For sorting in sidebar
+
+  @@index([userId])
+  @@index([lastActivity])
+  @@map("chats")
+}
 
 enum TaskStatus {
   PENDING
@@ -123,37 +147,41 @@ enum TaskPriority {
 }
 
 model Task {
-  id          String       @id @default(cuid())
-  userId      String
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(cuid())
+  userId String
+  chatId String // NEW: Link to conversation
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
   // Task Details
   title       String
   description String?
-  intent      String       // Original user request
+  intent      String // Original user request
   status      TaskStatus   @default(PENDING)
   priority    TaskPriority @default(MEDIUM)
 
   // Execution Plan
-  plan        Json?        // LLM-generated execution plan
-  currentStep Int          @default(0)
-  totalSteps  Int          @default(0)
+  plan        Json? // LLM-generated execution plan
+  currentStep Int   @default(0)
+  totalSteps  Int   @default(0)
 
   // Results
-  result      Json?        // Task execution result
-  error       String?      // Error message if failed
-  
+  result Json? // Task execution result
+  error  String? // Error message if failed
+
   // Timing
   startedAt   DateTime?
   completedAt DateTime?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   // Relations
-  logs        TaskLog[]
-  artifacts   TaskArtifact[]
+  logs      TaskLog[]
+  artifacts TaskArtifact[]
 
   @@index([userId])
+  @@index([chatId]) // NEW: Index for chat queries
   @@index([status])
   @@index([createdAt])
   @@map("tasks")
@@ -167,15 +195,15 @@ enum LogLevel {
 }
 
 model TaskLog {
-  id        String   @id @default(cuid())
-  taskId    String
-  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  
-  level     LogLevel @default(INFO)
-  message   String   @db.Text
-  step      Int?     // Which step this log belongs to
-  metadata  Json?    // Additional context
-  
+  id     String @id @default(cuid())
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  level    LogLevel @default(INFO)
+  message  String   @db.Text
+  step     Int? // Which step this log belongs to
+  metadata Json? // Additional context
+
   timestamp DateTime @default(now())
 
   @@index([taskId])
@@ -194,18 +222,18 @@ enum ArtifactType {
 }
 
 model TaskArtifact {
-  id          String       @id @default(cuid())
-  taskId      String
-  task        Task         @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(cuid())
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
   type        ArtifactType
   name        String
   description String?
-  url         String       // S3 URL or local path
-  size        Int?         // File size in bytes
+  url         String // S3 URL or local path
+  size        Int? // File size in bytes
   mimeType    String?
-  
-  createdAt   DateTime     @default(now())
+
+  createdAt DateTime @default(now())
 
   @@index([taskId])
   @@map("task_artifacts")
@@ -227,25 +255,25 @@ enum ToolCategory {
 }
 
 model Tool {
-  id          String       @id @default(cuid())
-  
+  id String @id @default(cuid())
+
   name        String       @unique // e.g., "search_google", "book_flight"
-  displayName String       // e.g., "Search Google"
+  displayName String // e.g., "Search Google"
   description String       @db.Text
   category    ToolCategory
-  
+
   // Tool Configuration
-  schema      Json         // JSON Schema for tool parameters
-  enabled     Boolean      @default(true)
-  
+  schema  Json // JSON Schema for tool parameters
+  enabled Boolean @default(true)
+
   // Usage Stats
-  usageCount  Int          @default(0)
-  
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  usageCount Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  executions  ToolExecution[]
+  executions ToolExecution[]
 
   @@index([category])
   @@index([enabled])
@@ -260,22 +288,22 @@ enum ExecutionStatus {
 }
 
 model ToolExecution {
-  id        String          @id @default(cuid())
-  toolId    String
-  tool      Tool            @relation(fields: [toolId], references: [id], onDelete: Cascade)
-  
-  taskId    String?         // Optional: link to task if part of a task
-  
-  input     Json            // Tool input parameters
-  output    Json?           // Tool output result
-  error     String?         // Error message if failed
-  status    ExecutionStatus @default(PENDING)
-  
-  duration  Int?            // Execution time in milliseconds
-  
+  id     String @id @default(cuid())
+  toolId String
+  tool   Tool   @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  taskId String? // Optional: link to task if part of a task
+
+  input  Json // Tool input parameters
+  output Json? // Tool output result
+  error  String? // Error message if failed
+  status ExecutionStatus @default(PENDING)
+
+  duration Int? // Execution time in milliseconds
+
   startedAt   DateTime?
   completedAt DateTime?
-  createdAt   DateTime      @default(now())
+  createdAt   DateTime  @default(now())
 
   @@index([toolId])
   @@index([taskId])
@@ -296,22 +324,22 @@ enum QueueName {
 }
 
 model QueueJob {
-  id        String    @id @default(cuid())
-  
-  queue     QueueName
-  jobId     String    @unique // BullMQ job ID
-  taskId    String?   // Optional: link to task
-  
-  data      Json      // Job data
-  status    String    // Job status from BullMQ
-  progress  Int       @default(0)
-  
-  attempts  Int       @default(0)
-  maxAttempts Int     @default(3)
-  
-  error     String?
-  result    Json?
-  
+  id String @id @default(cuid())
+
+  queue  QueueName
+  jobId  String    @unique // BullMQ job ID
+  taskId String? // Optional: link to task
+
+  data     Json // Job data
+  status   String // Job status from BullMQ
+  progress Int    @default(0)
+
+  attempts    Int @default(0)
+  maxAttempts Int @default(3)
+
+  error  String?
+  result Json?
+
   createdAt   DateTime  @default(now())
   startedAt   DateTime?
   completedAt DateTime?

@@ -1,5 +1,10 @@
-export { SearchBar } from './SearchBar';
-export { StatusBadge } from './StatusBadge';
+export { ChatInput } from './ChatInput';
+export { ChatListItem } from './ChatListItem';
+export { ChatMessage } from './ChatMessage';
 export { EmptyState } from './EmptyState';
 export { FormField } from './FormField';
+export { NewChatDialog } from './NewChatDialog';
+export { ResizableSidebar } from './ResizableSidebar';
+export { SearchBar } from './SearchBar';
 export { SocialLoginButtons } from './SocialLoginButtons';
+export { StatusBadge } from './StatusBadge';

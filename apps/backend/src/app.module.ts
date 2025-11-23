@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { AuthModule, JwtAuthGuard } from './auth';
 import { PrismaModule } from './libs/prisma';
 import { QueueModule } from './libs/queue';
+import { TasksModule } from './modules/tasks/tasks.module';
 import { ProfileModule } from './profile';
 
 @Module({
@@ -21,6 +22,7 @@ import { ProfileModule } from './profile';
     AuthModule,
     ProfileModule,
     AgentModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [

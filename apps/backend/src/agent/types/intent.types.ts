@@ -8,14 +8,41 @@ import { z } from 'zod';
  * Supported intent types
  */
 export enum IntentType {
+  // Utility intents
+  GET_WEATHER = 'get_weather',
+  CALCULATE = 'calculate',
+  
+  // Flight intents
   FLIGHT_SEARCH = 'flight_search',
   BOOK_FLIGHT = 'book_flight',
+  
+  // Job intents
   APPLY_JOB = 'apply_job',
+  
+  // Form intents
   FILL_FORM = 'fill_form',
+  
+  // Social media intents
   POST_SOCIAL = 'post_social',
+  
+  // Browser intents
   BROWSER_ACTION = 'browser_action',
+  
+  // General
   UNKNOWN = 'unknown',
 }
+
+/**
+ * Utility tool parameters
+ */
+export const GetWeatherIntentParamsSchema = z.object({
+  location: z.string().describe('City name or location'),
+  units: z.enum(['celsius', 'fahrenheit']).optional().default('celsius'),
+});
+
+export const CalculateIntentParamsSchema = z.object({
+  expression: z.string().describe('Mathematical expression to evaluate'),
+});
 
 /**
  * Flight search parameters
@@ -110,6 +137,8 @@ export const BrowserActionParamsSchema = z.object({
  * Union of all parameter schemas
  */
 export const IntentParamsSchema = z.union([
+  GetWeatherIntentParamsSchema,
+  CalculateIntentParamsSchema,
   FlightSearchParamsSchema,
   BookFlightParamsSchema,
   ApplyJobParamsSchema,
@@ -129,6 +158,8 @@ export const IntentClassificationSchema = z.object({
   missingFields: z.array(z.string()).optional().describe('Required fields that are missing'),
 });
 
+export type GetWeatherIntentParams = z.infer<typeof GetWeatherIntentParamsSchema>;
+export type CalculateIntentParams = z.infer<typeof CalculateIntentParamsSchema>;
 export type FlightSearchParams = z.infer<typeof FlightSearchParamsSchema>;
 export type BookFlightParams = z.infer<typeof BookFlightParamsSchema>;
 export type ApplyJobParams = z.infer<typeof ApplyJobParamsSchema>;

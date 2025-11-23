@@ -1,5 +1,5 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
-import { Logger } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 
 import { QueueName, TaskJobType } from '../queue.constants';
@@ -14,6 +14,12 @@ export interface TaskJobData {
 @Processor(QueueName.TASK)
 export class TaskProcessor extends WorkerHost {
   private readonly logger = new Logger(TaskProcessor.name);
+
+  constructor(
+    @Inject('TasksService') private readonly tasksService?: any,
+  ) {
+    super();
+  }
 
   async process(job: Job<TaskJobData>): Promise<any> {
     this.logger.log(`Processing task job ${job.id}: ${job.data.type}`);
@@ -42,31 +48,26 @@ export class TaskProcessor extends WorkerHost {
    * Execute a task
    */
   private async executeTask(job: Job<TaskJobData>) {
-    const { taskId, payload } = job.data;
+    const { taskId } = job.data;
     
     this.logger.log(`Executing task: ${taskId}`);
     
     // Update progress
     await job.updateProgress(10);
 
-    // TODO: Implement actual task execution
-    // 1. Fetch task from database
-    // 2. Load task plan
-    // 3. Execute each step
-    // 4. Update task status
-    // 5. Store results
+    if (!this.tasksService) {
+      this.logger.warn('TasksService not available, skipping execution');
+      return { taskId, status: 'skipped' };
+    }
 
-    await job.updateProgress(50);
-
-    // Simulate task execution
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Execute task using TasksService
+    await this.tasksService.executeTask(taskId);
 
     await job.updateProgress(100);
 
     return {
       taskId,
       status: 'completed',
-      result: payload,
       completedAt: new Date().toISOString(),
     };
   }

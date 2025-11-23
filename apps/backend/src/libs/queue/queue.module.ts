@@ -8,6 +8,7 @@ import { MediaProcessor } from './processors/media.processor';
 import { TaskProcessor } from './processors/task.processor';
 import { QueueController } from './queue.controller';
 import { QueueService } from './queue.service';
+import { QueueName } from './queue.constants';
 
 @Global()
 @Module({
@@ -23,6 +24,13 @@ import { QueueService } from './queue.service';
       }),
       inject: [ConfigService],
     }),
+    // Register all queues
+    BullModule.registerQueue(
+      { name: QueueName.TASK },
+      { name: QueueName.BROWSER },
+      { name: QueueName.EMAIL },
+      { name: QueueName.MEDIA },
+    ),
   ],
   providers: [
     QueueService,
