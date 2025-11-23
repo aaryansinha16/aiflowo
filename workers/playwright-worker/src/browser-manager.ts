@@ -1,4 +1,5 @@
 import { chromium, Browser, BrowserContext, Page } from 'playwright';
+
 import { config } from './config';
 import { logger } from './logger';
 

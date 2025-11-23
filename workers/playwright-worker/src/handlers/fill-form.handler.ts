@@ -1,6 +1,7 @@
 import { Page } from 'playwright';
-import { FillFormJobData, JobResult } from '../types';
+
 import { logger } from '../logger';
+import { FillFormJobData, JobResult } from '../types';
 
 export async function handleFillForm(
   page: Page,

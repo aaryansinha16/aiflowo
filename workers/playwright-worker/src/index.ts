@@ -1,7 +1,7 @@
-import { PlaywrightWorker } from './worker';
+import { config } from './config';
 import { HealthCheckServer } from './health-check';
 import { logger } from './logger';
-import { config } from './config';
+import { PlaywrightWorker } from './worker';
 
 /**
  * Main entry point for Playwright worker

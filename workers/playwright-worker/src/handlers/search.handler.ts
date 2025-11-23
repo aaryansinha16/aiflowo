@@ -1,6 +1,7 @@
 import { Page } from 'playwright';
-import { SearchJobData, JobResult } from '../types';
+
 import { logger } from '../logger';
+import { SearchJobData, JobResult } from '../types';
 
 export async function handleSearch(
   page: Page,

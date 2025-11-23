@@ -1,6 +1,7 @@
 import { Page } from 'playwright';
-import { ClickJobData, JobResult } from '../types';
+
 import { logger } from '../logger';
+import { ClickJobData, JobResult } from '../types';
 
 export async function handleClick(
   page: Page,

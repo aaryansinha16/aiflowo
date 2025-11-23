@@ -87,7 +87,7 @@ export type BrowserJob =
  */
 export interface JobResult {
   success: boolean;
-  data?: any;
+  data?: Record<string, unknown>;
   error?: string;
   screenshot?: string; // Base64 encoded screenshot
   duration?: number; // Execution time in ms

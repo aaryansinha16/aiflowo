@@ -1,9 +1,8 @@
 import { Worker, Job } from 'bullmq';
 import { Page, BrowserContext } from 'playwright';
-import { config } from './config';
-import { logger } from './logger';
+
 import { browserManager } from './browser-manager';
-import { BrowserJob, BrowserJobType, JobResult } from './types';
+import { config } from './config';
 import {
   handleNavigate,
   handleScreenshot,
@@ -11,6 +10,8 @@ import {
   handleFillForm,
   handleSearch,
 } from './handlers';
+import { logger } from './logger';
+import { BrowserJob, BrowserJobType, JobResult } from './types';
 
 export class PlaywrightWorker {
   private worker: Worker | null = null;
@@ -117,7 +118,7 @@ export class PlaywrightWorker {
         default:
           result = {
             success: false,
-            error: `Unknown job type: ${(job.data as any).type}`,
+            error: `Unknown job type: ${(job.data as { type?: string }).type}`,
           };
       }
 

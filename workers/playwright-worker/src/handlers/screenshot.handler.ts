@@ -1,6 +1,7 @@
 import { Page } from 'playwright';
-import { ScreenshotJobData, JobResult } from '../types';
+
 import { logger } from '../logger';
+import { ScreenshotJobData, JobResult } from '../types';
 
 export async function handleScreenshot(
   page: Page,

@@ -1,7 +1,8 @@
 import * as http from 'http';
+
+import { browserManager } from './browser-manager';
 import { config } from './config';
 import { logger } from './logger';
-import { browserManager } from './browser-manager';
 
 /**
  * Simple HTTP health check server

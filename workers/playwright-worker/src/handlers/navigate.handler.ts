@@ -1,6 +1,7 @@
 import { Page } from 'playwright';
-import { NavigateJobData, JobResult } from '../types';
+
 import { logger } from '../logger';
+import { NavigateJobData, JobResult } from '../types';
 
 export async function handleNavigate(
   page: Page,
