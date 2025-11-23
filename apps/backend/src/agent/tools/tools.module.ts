@@ -8,37 +8,25 @@ import { Module, OnModuleInit } from '@nestjs/common';
 import { LLMModule } from '../llm/llm.module';
 
 import { ToolExecutorService } from './executor/tool-executor.service';
-import { ToolHandlerRegistry } from './registry/tool-handler-registry';
-import { ToolsController } from './tools.controller';
-
-// Flight handlers
-import { SearchFlightsHandler } from './handlers/flight/search-flights.handler';
+import { BrowserActionHandler } from './handlers/browser/browser-action.handler';
+import { ExtractDataHandler } from './handlers/browser/extract-data.handler';
+import { NavigateToHandler } from './handlers/browser/navigate-to.handler';
+import { TakeScreenshotHandler } from './handlers/browser/take-screenshot.handler';
 import { BookFlightHandler } from './handlers/flight/book-flight.handler';
-
-// Job handlers
-import { SearchJobsHandler } from './handlers/job/search-jobs.handler';
+import { SearchFlightsHandler } from './handlers/flight/search-flights.handler';
+import { AnalyzeFormHandler } from './handlers/form/analyze-form.handler';
+import { FillFormHandler } from './handlers/form/fill-form.handler';
 import { ApplyJobHandler } from './handlers/job/apply-job.handler';
 import { GenerateCoverLetterHandler } from './handlers/job/generate-cover-letter.handler';
-
-// Form handlers
-import { FillFormHandler } from './handlers/form/fill-form.handler';
-import { AnalyzeFormHandler } from './handlers/form/analyze-form.handler';
-
-// Social handlers
+import { SearchJobsHandler } from './handlers/job/search-jobs.handler';
+import { GenerateCaptionHandler } from './handlers/social/generate-caption.handler';
 import { PostSocialHandler } from './handlers/social/post-social.handler';
 import { SchedulePostHandler } from './handlers/social/schedule-post.handler';
-import { GenerateCaptionHandler } from './handlers/social/generate-caption.handler';
-
-// Browser handlers
-import { BrowserActionHandler } from './handlers/browser/browser-action.handler';
-import { NavigateToHandler } from './handlers/browser/navigate-to.handler';
-import { ExtractDataHandler } from './handlers/browser/extract-data.handler';
-import { TakeScreenshotHandler } from './handlers/browser/take-screenshot.handler';
-
-// Validation handlers
-import { ValidateResultsHandler } from './handlers/validation/validate-results.handler';
 import { CheckCompletionHandler } from './handlers/validation/check-completion.handler';
+import { ValidateResultsHandler } from './handlers/validation/validate-results.handler';
 import { VerifyBookingHandler } from './handlers/validation/verify-booking.handler';
+import { ToolHandlerRegistry } from './registry/tool-handler-registry';
+import { ToolsController } from './tools.controller';
 
 @Module({
   imports: [LLMModule], // For LLM-based handlers

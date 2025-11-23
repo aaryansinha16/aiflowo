@@ -5,8 +5,8 @@
 
 import { Injectable } from '@nestjs/common';
 
-import { ToolName, VerifyBookingParams } from '../../../types/tools.types';
 import { ExecutionContext, ToolResult, createSuccessResult } from '../../../types/tool-execution.types';
+import { ToolName, VerifyBookingParams } from '../../../types/tools.types';
 import { BaseToolHandler } from '../base/base-tool-handler';
 
 interface BookingVerificationResult {

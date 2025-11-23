@@ -6,7 +6,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 
 import { TaskPlan, PlanStep } from '../../types/plan.types';
-import { ToolName } from '../../types/tools.types';
+import {
+  ToolErrorCode,
+  createToolError,
+  isRetryableError,
+} from '../../types/tool-error.types';
 import {
   ExecutionContext,
   ToolResult,
@@ -14,11 +18,7 @@ import {
   StepExecutionResult,
   createErrorResult,
 } from '../../types/tool-execution.types';
-import {
-  ToolErrorCode,
-  createToolError,
-  isRetryableError,
-} from '../../types/tool-error.types';
+import { ToolName } from '../../types/tools.types';
 import { ToolHandlerRegistry } from '../registry/tool-handler-registry';
 
 /**

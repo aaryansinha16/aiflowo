@@ -5,8 +5,8 @@
 
 import { Injectable } from '@nestjs/common';
 
-import { ToolName, SearchFlightsParams } from '../../../types/tools.types';
 import { ExecutionContext, ToolResult, createSuccessResult } from '../../../types/tool-execution.types';
+import { ToolName, SearchFlightsParams } from '../../../types/tools.types';
 import { BaseToolHandler } from '../base/base-tool-handler';
 
 interface FlightOption {

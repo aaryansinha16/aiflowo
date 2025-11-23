@@ -3,8 +3,8 @@
  * Defines the contract for all tool handler implementations
  */
 
-import { ToolName } from '../../types/tools.types';
 import { ExecutionContext, ToolResult } from '../../types/tool-execution.types';
+import { ToolName } from '../../types/tools.types';
 
 /**
  * Base interface for all tool handlers

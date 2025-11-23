@@ -6,9 +6,9 @@
 import { Injectable } from '@nestjs/common';
 
 import { LLMService } from '../../../llm/llm.service';
-import { ToolName, GenerateCoverLetterParams } from '../../../types/tools.types';
-import { ExecutionContext, ToolResult, createSuccessResult, createErrorResult } from '../../../types/tool-execution.types';
 import { createToolError, ToolErrorCode } from '../../../types/tool-error.types';
+import { ExecutionContext, ToolResult, createSuccessResult, createErrorResult } from '../../../types/tool-execution.types';
+import { ToolName, GenerateCoverLetterParams } from '../../../types/tools.types';
 import { BaseToolHandler } from '../base/base-tool-handler';
 
 interface CoverLetterResult {
