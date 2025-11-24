@@ -22,4 +22,16 @@ export const config = {
     port: parseInt(process.env.HEALTH_CHECK_PORT || '3001', 10),
   },
   nodeEnv: process.env.NODE_ENV || 'development',
+  
+  // S3/MinIO configuration
+  s3Endpoint: process.env.S3_ENDPOINT || 'http://localhost:9000',
+  s3AccessKeyId: process.env.S3_ACCESS_KEY_ID || 'minioadmin',
+  s3SecretAccessKey: process.env.S3_SECRET_ACCESS_KEY || 'minioadmin',
+  s3Bucket: process.env.S3_BUCKET || 'aiflowo-uploads',
+  s3Region: process.env.S3_REGION || 'us-east-1',
+
+  // File upload configuration
+  tempDir: process.env.TEMP_DIR || '/tmp/playwright-uploads',
+  maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '104857600', 10), // 100MB default
+  uploadTimeout: parseInt(process.env.UPLOAD_TIMEOUT || '30000', 10),
 };

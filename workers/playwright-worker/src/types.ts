@@ -9,6 +9,7 @@ export enum BrowserJobType {
   SEARCH = 'search',
   TYPE = 'type',
   WAIT = 'wait',
+  UPLOAD = 'upload',
 }
 
 /**
@@ -102,6 +103,34 @@ export interface WaitJobData extends BaseJobData {
 }
 
 /**
+ * Upload job data - for file uploads
+ */
+export interface UploadJobData extends BaseJobData {
+  type: BrowserJobType.UPLOAD;
+  url: string;
+  selector: string; // File input selector
+  fileSource?: 's3' | 'url' | 'local'; // Source of the file (default: 's3')
+
+  // Single file upload (legacy)
+  s3Key?: string; // S3 object key
+  s3Bucket?: string; // S3 bucket name (optional, uses default)
+  fileUrl?: string; // Direct URL to download
+  filePath?: string; // Local file path
+
+  // Multiple file upload
+  files?: Array<{
+    fileSource?: 's3' | 'url' | 'local';
+    s3Key?: string;
+    s3Bucket?: string;
+    fileUrl?: string;
+    filePath?: string;
+  }>;
+
+  waitForUpload?: boolean; // Wait after upload (default: false)
+  uploadTimeout?: number; // Timeout for upload wait in ms
+}
+
+/**
  * Union type of all job data
  */
 export type BrowserJob =
@@ -111,7 +140,8 @@ export type BrowserJob =
   | FillFormJobData
   | SearchJobData
   | TypeJobData
-  | WaitJobData;
+  | WaitJobData
+  | UploadJobData;
 
 /**
  * Job result interface

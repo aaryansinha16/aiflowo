@@ -108,6 +108,37 @@ Wait for various page conditions before proceeding.
 }
 ```
 
+### 8. Upload (`UPLOAD`)
+Upload files from S3, URL, or local disk to browser forms.
+
+```typescript
+{
+  type: 'upload',
+  url: 'https://example.com/form',
+  selector: 'input[type="file"]',
+  fileSource: 's3', // 's3' | 'url' | 'local'
+  s3Key: 'uploads/resume.pdf', // for S3 source
+  s3Bucket: 'aiflowo-uploads', // optional, uses default bucket
+  fileUrl: 'https://example.com/file.pdf', // for URL source
+  filePath: '/path/to/local/file.pdf', // for local source
+  waitForUpload: false, // optional, wait after upload
+  uploadTimeout: 10000 // optional, timeout for upload wait
+}
+```
+
+**Multiple Files:**
+```typescript
+{
+  type: 'upload',
+  url: 'https://example.com/form',
+  selector: 'input[type="file"][multiple]',
+  files: [
+    { fileSource: 's3', s3Key: 'uploads/resume.pdf' },
+    { fileSource: 's3', s3Key: 'uploads/cover-letter.pdf' }
+  ]
+}
+```
+
 ## Environment Variables
 
 ```env
@@ -127,6 +158,18 @@ NODE_ENV=development        # development | production
 
 # Health Check
 HEALTH_CHECK_PORT=3001
+
+# S3/MinIO Configuration
+S3_ENDPOINT=http://localhost:9000
+S3_ACCESS_KEY_ID=minioadmin
+S3_SECRET_ACCESS_KEY=minioadmin
+S3_BUCKET=aiflowo-uploads
+S3_REGION=us-east-1
+
+# File Upload Configuration
+TEMP_DIR=/tmp/playwright-uploads
+MAX_FILE_SIZE=104857600          # 100MB
+UPLOAD_TIMEOUT=30000
 ```
 
 ## Development
@@ -232,6 +275,7 @@ Response:
 │  - Search       │
 │  - Type         │
 │  - Wait         │
+│  - Upload       │
 └─────────────────┘
 ```
 
