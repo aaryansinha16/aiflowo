@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { AuthModule, JwtAuthGuard } from './auth';
 import { PrismaModule } from './libs/prisma';
 import { QueueModule } from './libs/queue';
+import { StorageModule } from './libs/storage/storage.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { ProfileModule } from './profile';
 
@@ -19,6 +20,7 @@ import { ProfileModule } from './profile';
     }),
     PrismaModule,
     QueueModule,
+    StorageModule,
     AuthModule,
     ProfileModule,
     AgentModule,

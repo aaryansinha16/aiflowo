@@ -11,6 +11,7 @@ import {
   handleSearch,
   handleType,
   handleWait,
+  handleUpload,
 } from './handlers';
 import { logger } from './logger';
 import { BrowserJob, BrowserJobType, JobResult } from './types';
@@ -19,7 +20,7 @@ export class PlaywrightWorker {
   private worker: Worker | null = null;
   private isShuttingDown = false;
 
-  constructor() {}
+  constructor() { }
 
   /**
    * Start the worker
@@ -123,6 +124,10 @@ export class PlaywrightWorker {
 
         case BrowserJobType.WAIT:
           result = await handleWait(page, job.data);
+          break;
+
+        case BrowserJobType.UPLOAD:
+          result = await handleUpload(page, job.data);
           break;
 
         default:

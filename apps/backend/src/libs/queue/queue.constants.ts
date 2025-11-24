@@ -25,6 +25,7 @@ export enum BrowserJobType {
   SEARCH = 'search',
   TYPE = 'type',
   WAIT = 'wait',
+  UPLOAD = 'upload',
 }
 
 export enum MediaJobType {

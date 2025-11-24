@@ -1,7 +1,8 @@
-export { handleNavigate } from './navigate.handler';
-export { handleScreenshot } from './screenshot.handler';
 export { handleClick } from './click.handler';
 export { handleFillForm } from './fill-form.handler';
+export { handleNavigate } from './navigate.handler';
+export { handleScreenshot } from './screenshot.handler';
 export { handleSearch } from './search.handler';
 export { handleType } from './type.handler';
 export { handleWait } from './wait.handler';
+export { handleUpload } from './upload.handler';

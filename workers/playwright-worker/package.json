@@ -10,10 +10,11 @@
     "clean": "rm -rf dist node_modules"
   },
   "dependencies": {
-    "playwright": "^1.56.1",
+    "@aws-sdk/client-s3": "^3.937.0",
     "bullmq": "^5.64.0",
+    "dotenv": "^16.4.7",
     "ioredis": "^5.8.2",
-    "dotenv": "^16.4.7"
+    "playwright": "^1.56.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
