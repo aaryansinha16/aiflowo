@@ -8,6 +8,7 @@ import {
   handleScreenshot,
   handleClick,
   handleFillForm,
+  handleFillFormAuto,
   handleSearch,
   handleType,
   handleWait,
@@ -112,6 +113,10 @@ export class PlaywrightWorker {
 
         case BrowserJobType.FILL_FORM:
           result = await handleFillForm(page, job.data);
+          break;
+
+        case BrowserJobType.FILL_FORM_AUTO:
+          result = await handleFillFormAuto(page, job.data);
           break;
 
         case BrowserJobType.SEARCH:

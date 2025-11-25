@@ -24,11 +24,12 @@ model User {
   updatedAt    DateTime  @updatedAt
 
   // Relations
-  profile    UserProfile?
-  chats      Chat[] // NEW: User's conversations
-  tasks      Task[]
-  magicLinks MagicLink[]
-  sessions   Session[]
+  profile      UserProfile?
+  formProfiles FormProfile[] // User's form filling profiles
+  chats        Chat[] // NEW: User's conversations
+  tasks        Task[]
+  magicLinks   MagicLink[]
+  sessions     Session[]
 
   @@index([email])
   @@map("users")
@@ -56,6 +57,10 @@ model UserProfile {
   linkedInUrl  String?
   githubUrl    String?
   portfolioUrl String?
+
+  // Form Filling Data (for automatic form filling)
+  formData Json? // Flexible JSON for personal info, address, documents, etc.
+  // Example: { "personal": {...}, "contact": {...}, "address": {...}, "documents": {...} }
 
   // Preferences
   timezone      String  @default("UTC")
@@ -101,6 +106,76 @@ model Session {
   @@index([token])
   @@index([userId])
   @@map("sessions")
+}
+
+model FormProfile {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Profile Metadata
+  name        String // e.g., "Personal", "Work", "Job Applications"
+  description String? // Optional description
+  isDefault   Boolean @default(false) // Default profile for form filling
+
+  // Personal Information
+  firstName   String?
+  lastName    String?
+  fullName    String?
+  dateOfBirth DateTime?
+  gender      String? // e.g., "Male", "Female", "Other", "Prefer not to say"
+  nationality String?
+
+  // Contact Information
+  email       String?
+  phone       String?
+  alternatePhone String?
+
+  // Address Information
+  address1    String?
+  address2    String?
+  city        String?
+  state       String?
+  zipCode     String?
+  country     String?
+
+  // Professional Information
+  occupation      String?
+  company         String?
+  jobTitle        String?
+  yearsExperience Int?
+  resume          String? // S3 URL
+  coverLetter     String? // S3 URL or text
+  linkedInUrl     String?
+  githubUrl       String?
+  portfolioUrl    String?
+
+  // Education
+  education Json? // [{ degree, institution, year, gpa }]
+
+  // Skills
+  skills String[] // ["JavaScript", "Python", "React"]
+
+  // Documents (S3 URLs)
+  documents Json? // { "passport": "s3://...", "driverLicense": "s3://..." }
+
+  // Social Media
+  socialLinks Json? // { "twitter": "...", "instagram": "..." }
+
+  // Emergency Contact
+  emergencyContactName  String?
+  emergencyContactPhone String?
+  emergencyContactRelation String?
+
+  // Additional flexible data
+  customFields Json? // For any other form-specific data
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([isDefault])
+  @@map("form_profiles")
 }
 
 // ============================================

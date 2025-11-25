@@ -10,6 +10,7 @@ export enum BrowserJobType {
   TYPE = 'type',
   WAIT = 'wait',
   UPLOAD = 'upload',
+  FILL_FORM_AUTO = 'fill_form_auto',
 }
 
 /**
@@ -131,6 +132,37 @@ export interface UploadJobData extends BaseJobData {
 }
 
 /**
+ * Automatic form filling with AI-powered field mapping
+ */
+export interface FillFormAutoJobData extends BaseJobData {
+  type: BrowserJobType.FILL_FORM_AUTO;
+  url: string;
+
+  // Form structure (from DOM analysis)
+  formStructure?: {
+    url: string;
+    title: string;
+    fields: Array<{
+      selector: string;
+      type: string;
+      label: string;
+      name?: string;
+      required: boolean;
+      options?: string[];
+    }>;
+  };
+
+  // Field mappings (from AI)
+  mappings?: Array<{
+    selector: string;
+    value: any;
+    confidence: number;
+    fieldType: string;
+    source?: string;
+  }>;
+}
+
+/**
  * Union type of all job data
  */
 export type BrowserJob =
@@ -141,7 +173,8 @@ export type BrowserJob =
   | SearchJobData
   | TypeJobData
   | WaitJobData
-  | UploadJobData;
+  | UploadJobData
+  | FillFormAutoJobData;
 
 /**
  * Job result interface

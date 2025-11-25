@@ -6,6 +6,7 @@ import { AgentModule } from './agent';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule, JwtAuthGuard } from './auth';
+import { FormsModule } from './libs/forms';
 import { PrismaModule } from './libs/prisma';
 import { QueueModule } from './libs/queue';
 import { StorageModule } from './libs/storage/storage.module';
@@ -21,6 +22,7 @@ import { ProfileModule } from './profile';
     PrismaModule,
     QueueModule,
     StorageModule,
+    FormsModule,
     AuthModule,
     ProfileModule,
     AgentModule,

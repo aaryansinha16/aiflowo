@@ -21,6 +21,13 @@ export class BrowserProcessor extends WorkerHost {
     this.logger.log(`Processing browser job ${job.id}: ${job.data.type}`);
 
     try {
+      // FILL_FORM_AUTO is handled exclusively by Playwright worker, skip in backend
+      if (job.data.type === BrowserJobType.FILL_FORM_AUTO) {
+        this.logger.debug(`Skipping FILL_FORM_AUTO job ${job.id} - handled by Playwright worker`);
+        // Don't process or return anything - let the Playwright worker handle it
+        return;
+      }
+
       switch (job.data.type) {
         case BrowserJobType.NAVIGATE:
           return await this.navigate(job);
