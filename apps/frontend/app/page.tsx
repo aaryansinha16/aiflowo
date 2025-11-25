@@ -1,6 +1,6 @@
 'use client';
 
-import { Sparkles, Inbox } from 'lucide-react';
+import { Sparkles, Inbox, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 import { Text } from '@/components/atoms';
@@ -32,6 +32,26 @@ export default function Home() {
               View Dashboard
             </Button>
           </div>
+        </div>
+
+        {/* AI Tools */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/forms/fill')}>
+            <CardHeader>
+              <div className="flex items-center gap-2 mb-2">
+                <FileText className="h-5 w-5 text-indigo-600" />
+                <CardTitle className="text-lg">Form Filler</CardTitle>
+              </div>
+              <CardDescription>
+                Fill any web form automatically using AI-powered field mapping
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full" onClick={() => router.push('/forms/fill')}>
+                Try Form Filler →
+              </Button>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Component Showcase */}

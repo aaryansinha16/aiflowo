@@ -21,6 +21,7 @@ export enum BrowserJobType {
   NAVIGATE = 'navigate',
   SCREENSHOT = 'screenshot',
   FILL_FORM = 'fill_form',
+  FILL_FORM_AUTO = 'fill_form_auto',
   CLICK = 'click',
   SEARCH = 'search',
   TYPE = 'type',

@@ -2,7 +2,6 @@ import { BullModule } from '@nestjs/bullmq';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-import { BrowserProcessor } from './processors/browser.processor';
 import { EmailProcessor } from './processors/email.processor';
 import { MediaProcessor } from './processors/media.processor';
 import { TaskProcessor } from './processors/task.processor';
@@ -35,7 +34,8 @@ import { QueueService } from './queue.service';
   providers: [
     QueueService,
     TaskProcessor,
-    BrowserProcessor,
+    // BrowserProcessor disabled - Playwright worker handles all browser jobs
+    // BrowserProcessor,
     MediaProcessor,
     EmailProcessor,
   ],

@@ -2,7 +2,7 @@ import { createWriteStream } from 'fs';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 
 import { config } from '../config';
 import { logger } from '../logger';
@@ -96,6 +96,49 @@ export class S3FileClient {
       if ((error as { name: string }).name === 'NoSuchKey') {
         return false;
       }
+      throw error;
+    }
+  }
+
+  /**
+   * Upload a file/buffer to S3
+   */
+  async uploadFile(
+    key: string,
+    data: Buffer | Uint8Array | string,
+    contentType?: string,
+    bucket?: string
+  ): Promise<string> {
+    const targetBucket = bucket || this.bucket;
+
+    try {
+      logger.debug(`Uploading ${key} to S3 bucket ${targetBucket}`);
+
+      const command = new PutObjectCommand({
+        Bucket: targetBucket,
+        Key: key,
+        Body: data,
+        ContentType: contentType || 'application/octet-stream',
+      });
+
+      await this.client.send(command);
+
+      const url = `${config.s3Endpoint}/${targetBucket}/${key}`;
+
+      logger.info(`File uploaded successfully`, {
+        key,
+        bucket: targetBucket,
+        url,
+        size: Buffer.isBuffer(data) ? data.length : data.toString().length,
+      });
+
+      return url;
+    } catch (error) {
+      logger.error(`Failed to upload file to S3`, {
+        key,
+        bucket: targetBucket,
+        error,
+      });
       throw error;
     }
   }
