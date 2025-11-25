@@ -2,8 +2,8 @@ import { Controller, Get, Post, Body, Param, Res, Logger, UseGuards } from '@nes
 import { Response } from 'express';
 
 import { CurrentUser } from '../../auth/decorators/current-user.decorator';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { Public } from '../../auth/decorators/public.decorator';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { QueueName } from '../queue/queue.constants';
 import { QueueService } from '../queue/queue.service';
 
