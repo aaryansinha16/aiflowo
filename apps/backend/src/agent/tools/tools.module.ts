@@ -5,6 +5,7 @@
 
 import { Module, OnModuleInit } from '@nestjs/common';
 
+import { FlightsModule } from '../../modules/flights/flights.module';
 import { LLMModule } from '../llm/llm.module';
 
 import { ToolExecutorService } from './executor/tool-executor.service';
@@ -31,7 +32,10 @@ import { ToolHandlerRegistry } from './registry/tool-handler-registry';
 import { ToolsController } from './tools.controller';
 
 @Module({
-  imports: [LLMModule], // For LLM-based handlers
+  imports: [
+    LLMModule, // For LLM-based handlers
+    FlightsModule, // For flight search integration
+  ],
   controllers: [ToolsController],
   providers: [
     ToolHandlerRegistry,

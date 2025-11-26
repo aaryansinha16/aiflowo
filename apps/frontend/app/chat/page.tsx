@@ -35,6 +35,47 @@ function formatTaskResult(task: any): string {
     return stepResult.result.summary;
   }
   
+  // Handle flight search results
+  if (stepResult.toolName === 'search_flights' && stepResult.result?.data?.flights) {
+    const flights = stepResult.result.data.flights;
+    if (flights.length === 0) {
+      return '❌ No flights found for your search criteria.';
+    }
+    
+    let message = `✈️ Found ${flights.length} flight${flights.length > 1 ? 's' : ''} from ${flights[0].from} to ${flights[0].to}:\n\n`;
+    
+    // Show all flights (they're already sorted by price from backend)
+    flights.forEach((flight: any, index: number) => {
+      const departureTime = new Date(flight.departure).toLocaleString('en-IN', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      const arrivalTime = new Date(flight.arrival).toLocaleString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      
+      // Parse duration (e.g., "PT2H30M" -> "2h 30m")
+      const duration = flight.duration.replace('PT', '').replace('H', 'h ').replace('M', 'm');
+      
+      // Highlight cheapest flight
+      const isCheapest = index === 0;
+      const prefix = isCheapest ? '🏆 ' : '';
+      
+      message += `${prefix}${index + 1}. **${flight.airline}** ${flight.flightNumber}\n`;
+      message += `   ${flight.from} → ${flight.to}\n`;
+      message += `   🕐 ${departureTime} - ${arrivalTime}\n`;
+      message += `   ⏱️ ${duration} | ${flight.stops === 0 ? '✈️ Direct' : `🔄 ${flight.stops} stop${flight.stops > 1 ? 's' : ''}`}\n`;
+      message += `   💰 ₹${flight.price.toLocaleString('en-IN')}${isCheapest ? ' (Cheapest)' : ''}\n\n`;
+    });
+    
+    message += `💡 All flights are sorted by price (lowest first).\n\n`;
+    message += `Would you like me to help you book one of these flights? Just let me know the flight number!`;
+    return message;
+  }
+  
   // Last resort: generic success message
   return `Task completed successfully using ${stepResult.toolName}`;
 }

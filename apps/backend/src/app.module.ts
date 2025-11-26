@@ -10,6 +10,7 @@ import { FormsModule } from './libs/forms';
 import { PrismaModule } from './libs/prisma';
 import { QueueModule } from './libs/queue';
 import { StorageModule } from './libs/storage/storage.module';
+import { FlightsModule } from './modules/flights/flights.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { ProfileModule } from './profile';
 
@@ -23,6 +24,7 @@ import { ProfileModule } from './profile';
     QueueModule,
     StorageModule,
     FormsModule,
+    FlightsModule,
     AuthModule,
     ProfileModule,
     AgentModule,
