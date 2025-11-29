@@ -11,6 +11,18 @@ import {
   IntentType,
 } from '../types/intent.types';
 
+/**
+ * Chat context for intent classification
+ */
+export interface IntentContext {
+  previousTasks?: Array<{
+    intent: string;
+    status: string;
+    result?: any;
+  }>;
+  summary?: string;
+}
+
 @Injectable()
 export class IntentService {
   private readonly logger = new Logger(IntentService.name);
@@ -19,13 +31,21 @@ export class IntentService {
 
   /**
    * Classify user intent from natural language message
+   * @param userMessage - The user's message
+   * @param context - Optional conversation context for follow-up understanding
    */
-  async classifyIntent(userMessage: string): Promise<IntentClassification> {
+  async classifyIntent(
+    userMessage: string,
+    context?: IntentContext
+  ): Promise<IntentClassification> {
     this.logger.log(`Classifying intent for message: "${userMessage}"`);
+    if (context?.previousTasks?.length) {
+      this.logger.log(`With ${context.previousTasks.length} previous tasks for context`);
+    }
 
     try {
-      // Create messages with current date context
-      const messages = createIntentClassifierMessages(userMessage, new Date());
+      // Create messages with current date and conversation context
+      const messages = createIntentClassifierMessages(userMessage, new Date(), context);
 
       // Call LLM with function calling
       const completion = await this.llmService.complete(
@@ -85,6 +105,12 @@ export class IntentService {
     missingFields: string[];
   } {
     const requiredFields: Record<IntentType, string[]> = {
+      // Conversational intents (no required fields)
+      [IntentType.GREETING]: [],
+      [IntentType.CLARIFICATION]: [],
+      [IntentType.GENERAL_QUESTION]: [],
+      [IntentType.HELP]: [],
+      // Task intents
       [IntentType.GET_WEATHER]: ['location'],
       [IntentType.CALCULATE]: ['expression'],
       [IntentType.FLIGHT_SEARCH]: ['from', 'to', 'date'],

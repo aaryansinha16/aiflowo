@@ -14,9 +14,11 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Task, TaskLog, TaskStatus } from '@prisma/client';
 
 import { IntentService } from '../../../agent/intent/intent.service';
+import { LightweightResponseService } from '../../../agent/lightweight/lightweight-response.service';
 import { LLMService } from '../../../agent/llm/llm.service';
 import { PlanService } from '../../../agent/plan/plan.service';
 import { ToolExecutorService } from '../../../agent/tools/executor/tool-executor.service';
+import { isLightweightIntent } from '../../../agent/types/intent.types';
 import { ExecutionContext } from '../../../agent/types/tool-execution.types';
 import { PrismaService } from '../../../libs/prisma';
 import { QueueService } from '../../../libs/queue';
@@ -39,6 +41,7 @@ export class TasksService {
     private readonly planService: PlanService,
     private readonly toolExecutor: ToolExecutorService,
     private readonly llmService: LLMService,
+    private readonly lightweightService: LightweightResponseService,
     private readonly stateValidator: TaskStateValidator,
     private readonly eventEmitter: EventEmitter2,
   ) {}
@@ -56,18 +59,35 @@ export class TasksService {
     // Verify chat exists and belongs to user
     await this.chatsService.getChat(chatId, userId);
 
-    // Get chat context (previous tasks) - TODO: Use for context-aware planning
-    // const chatContext = await this.chatsService.getChatContext(chatId);
+    // Get chat context (previous tasks) for context-aware responses
+    const chatContext = await this.chatsService.getChatContext(chatId);
 
-    // Classify intent
+    // Build intent context from previous tasks
+    const intentContext = {
+      previousTasks: chatContext.previousTasks.map(t => ({
+        intent: t.intent,
+        status: t.status,
+        result: t.result,
+      })),
+      summary: chatContext.summary,
+    };
+
+    // Classify intent with conversation context
     this.logger.log(`Classifying intent: "${dto.intent}"`);
-    const classification = await this.intentService.classifyIntent(dto.intent);
+    const classification = await this.intentService.classifyIntent(dto.intent, intentContext);
+
+    // Check if this is a lightweight intent (greeting, help, etc.)
+    if (isLightweightIntent(classification.intent)) {
+      this.logger.log(`Lightweight intent detected: ${classification.intent}`);
+      return this.handleLightweightResponse(chatId, userId, dto.intent, classification, chatContext);
+    }
 
     // Generate execution plan with context
     this.logger.log(`Generating plan for intent type: ${classification.intent}`);
     const plan = await this.planService.generatePlan(classification, {
       userId,
       userProfile: {}, // TODO: Load user profile
+      chatContext, // Pass context for context-aware planning
     });
 
     // Validate plan
@@ -113,6 +133,69 @@ export class TasksService {
     await this.startTask(task.id);
 
     return this.mapToResponse(task);
+  }
+
+  /**
+   * Handle lightweight response for conversational intents
+   * Creates a task that completes immediately with the response
+   */
+  private async handleLightweightResponse(
+    chatId: string,
+    userId: string,
+    userMessage: string,
+    classification: any,
+    chatContext: ChatContext,
+  ): Promise<TaskResponseDto> {
+    // Generate quick response
+    const response = await this.lightweightService.generateResponse(
+      userMessage,
+      classification,
+      chatContext,
+    );
+
+    // Create a completed task with the response
+    const task = await this.prisma.task.create({
+      data: {
+        chatId,
+        userId,
+        intent: userMessage,
+        title: this.getLightweightTitle(classification.intent),
+        description: `${classification.intent} response`,
+        status: TaskStatus.SUCCEEDED,
+        priority: 'LOW',
+        plan: { intent: classification.intent, steps: [], metadata: { isLightweight: true } } as any,
+        totalSteps: 0,
+        currentStep: 0,
+        result: {
+          success: true,
+          message: response.message,
+          isLightweight: true,
+          intent: classification.intent,
+        } as any,
+        startedAt: new Date(),
+        completedAt: new Date(),
+      },
+    });
+
+    // Update chat lastActivity
+    await this.chatsService.updateLastActivity(chatId);
+
+    this.logger.log(`Lightweight response created: ${task.id} for intent ${classification.intent}`);
+
+    return this.mapToResponse(task);
+  }
+
+  /**
+   * Get a friendly title for lightweight intents
+   */
+  private getLightweightTitle(intent: string): string {
+    const titles: Record<string, string> = {
+      greeting: 'Greeting',
+      help: 'Help Request',
+      clarification: 'Clarification',
+      general_question: 'Question',
+    };
+    return titles[intent] || 'Response';
   }
 
   /**

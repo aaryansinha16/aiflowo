@@ -314,6 +314,24 @@ export function getToolDescriptions(): string {
  */
 export function getExamplePlan(intent: IntentType): string {
   const examples: Record<IntentType, string> = {
+    // Lightweight intents (handled separately, no plan needed)
+    [IntentType.GREETING]: JSON.stringify(
+      { intent: 'greeting', steps: [], metadata: { complexity: 'simple', totalSteps: 0 } },
+      null, 2
+    ),
+    [IntentType.CLARIFICATION]: JSON.stringify(
+      { intent: 'clarification', steps: [], metadata: { complexity: 'simple', totalSteps: 0 } },
+      null, 2
+    ),
+    [IntentType.GENERAL_QUESTION]: JSON.stringify(
+      { intent: 'general_question', steps: [], metadata: { complexity: 'simple', totalSteps: 0 } },
+      null, 2
+    ),
+    [IntentType.HELP]: JSON.stringify(
+      { intent: 'help', steps: [], metadata: { complexity: 'simple', totalSteps: 0 } },
+      null, 2
+    ),
+    // Task intents
     [IntentType.GET_WEATHER]: JSON.stringify(
       {
         intent: 'get_weather',

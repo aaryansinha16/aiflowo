@@ -132,6 +132,18 @@ export type PlanContext = {
     resumeUrl?: string;
     paymentMethods?: string[];
   };
+  chatContext?: {
+    chatId: string;
+    previousTasks: Array<{
+      id: string;
+      title: string;
+      intent: string;
+      status: string;
+      result?: any;
+      createdAt: Date;
+    }>;
+    summary?: string;
+  };
   environment?: 'development' | 'staging' | 'production';
   dryRun?: boolean;
 };
@@ -144,6 +156,28 @@ export type PlanExecutionResult = z.infer<typeof PlanExecutionResultSchema>;
  * These serve as examples and can be customized by the LLM
  */
 export const PLAN_TEMPLATES: Record<IntentType, Partial<TaskPlan>> = {
+  // Lightweight intents (no task execution needed)
+  [IntentType.GREETING]: {
+    intent: IntentType.GREETING,
+    steps: [],
+    metadata: { complexity: 'simple', totalSteps: 0, requiresUserInput: false },
+  },
+  [IntentType.CLARIFICATION]: {
+    intent: IntentType.CLARIFICATION,
+    steps: [],
+    metadata: { complexity: 'simple', totalSteps: 0, requiresUserInput: false },
+  },
+  [IntentType.GENERAL_QUESTION]: {
+    intent: IntentType.GENERAL_QUESTION,
+    steps: [],
+    metadata: { complexity: 'simple', totalSteps: 0, requiresUserInput: false },
+  },
+  [IntentType.HELP]: {
+    intent: IntentType.HELP,
+    steps: [],
+    metadata: { complexity: 'simple', totalSteps: 0, requiresUserInput: false },
+  },
+  // Utility intents
   [IntentType.GET_WEATHER]: {
     intent: IntentType.GET_WEATHER,
     steps: [],

@@ -8,6 +8,12 @@ import { z } from 'zod';
  * Supported intent types
  */
 export enum IntentType {
+  // Conversational intents (lightweight - no task execution)
+  GREETING = 'greeting',
+  CLARIFICATION = 'clarification',
+  GENERAL_QUESTION = 'general_question',
+  HELP = 'help',
+  
   // Utility intents
   GET_WEATHER = 'get_weather',
   CALCULATE = 'calculate',
@@ -30,6 +36,20 @@ export enum IntentType {
   
   // General
   UNKNOWN = 'unknown',
+}
+
+/**
+ * Intent types that should be handled with lightweight responses (no task execution)
+ */
+export const LIGHTWEIGHT_INTENTS = [
+  IntentType.GREETING,
+  IntentType.CLARIFICATION,
+  IntentType.GENERAL_QUESTION,
+  IntentType.HELP,
+] as const;
+
+export function isLightweightIntent(intent: IntentType): boolean {
+  return LIGHTWEIGHT_INTENTS.includes(intent as any);
 }
 
 /**
