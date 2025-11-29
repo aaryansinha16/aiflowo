@@ -17,8 +17,17 @@ import { cn } from '@/lib/utils';
 function formatTaskResult(task: any): string {
   if (!task.result) return 'Task completed successfully!';
   
+  // Handle lightweight responses (greetings, help, etc.)
+  if (task.result.isLightweight && task.result.message) {
+    return task.result.message;
+  }
+  
   const { results } = task.result;
   if (!results || !Array.isArray(results) || results.length === 0) {
+    // Check if there's a direct message in result
+    if (task.result.message) {
+      return task.result.message;
+    }
     return 'Task completed successfully!';
   }
   
