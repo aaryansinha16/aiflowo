@@ -139,5 +139,3 @@ This project is private and proprietary.
 - [GitHub Issues](./docs/github_issues_import.json)
 
 ---
-
-Built with ❤️ by the AI Flowo team
