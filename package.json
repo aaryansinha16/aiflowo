@@ -16,6 +16,7 @@
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
+    "typecheck": "tsc -p apps/frontend/tsconfig.json --noEmit && tsc -p apps/backend/tsconfig.json --noEmit && tsc -p packages/shared/tsconfig.json --noEmit && tsc -p packages/ui/tsconfig.json --noEmit && tsc -p workers/media-worker/tsconfig.json --noEmit && tsc -p workers/playwright-worker/tsconfig.json --noEmit",
     "clean": "npm run clean --workspaces --if-present && rm -rf node_modules",
     "db:migrate": "npm run prisma migrate dev --workspace=backend",
     "db:generate": "npm run prisma generate --workspace=backend",
