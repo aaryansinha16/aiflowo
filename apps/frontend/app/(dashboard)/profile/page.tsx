@@ -9,6 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('profile');
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
@@ -66,7 +69,7 @@ export default function ProfilePage() {
         setMessage('Welcome! Please complete your profile to get started.');
       }
     } catch (error) {
-      console.error('Failed to load profile:', error);
+      log.error('Failed to load profile', error);
       setMessage('Failed to load profile');
     } finally {
       setLoading(false);
@@ -121,7 +124,7 @@ export default function ProfilePage() {
         throw new Error('Failed to update profile');
       }
     } catch (error) {
-      console.error('Failed to save profile:', error);
+      log.error('Failed to save profile', error);
       setMessage('❌ Failed to save profile');
     } finally {
       setSaving(false);

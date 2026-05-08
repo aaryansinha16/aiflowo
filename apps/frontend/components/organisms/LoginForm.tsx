@@ -15,15 +15,18 @@ export interface LoginFormProps {
   onGithubLogin?: () => Promise<void>;
   onRegisterClick?: () => void;
   isLoading?: boolean;
+  variant?: 'login' | 'register';
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ 
-  onSubmit, 
+const LoginForm: React.FC<LoginFormProps> = ({
+  onSubmit,
   onGoogleLogin,
   onGithubLogin,
   onRegisterClick,
-  isLoading = false 
+  isLoading = false,
+  variant = 'login',
 }) => {
+  const isRegister = variant === 'register';
   const [email, setEmail] = React.useState('');
   const [error, setError] = React.useState('');
 
@@ -53,8 +56,14 @@ const LoginForm: React.FC<LoginFormProps> = ({
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Welcome back</CardTitle>
-        <CardDescription>Enter your email to receive a magic link</CardDescription>
+        <CardTitle className="text-2xl">
+          {isRegister ? 'Create your account' : 'Welcome back'}
+        </CardTitle>
+        <CardDescription>
+          {isRegister
+            ? 'Enter your email and we will send you a magic link to get started'
+            : 'Enter your email to receive a magic link'}
+        </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
@@ -82,7 +91,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
             ) : (
               <>
                 <Mail className="h-4 w-4" />
-                Send magic link
+                {isRegister ? 'Sign up with magic link' : 'Send magic link'}
               </>
             )}
           </Button>
@@ -98,13 +107,13 @@ const LoginForm: React.FC<LoginFormProps> = ({
           {onRegisterClick && (
             <div className="text-center">
               <Text variant="muted" className="text-sm">
-                Don&apos;t have an account?{' '}
+                {isRegister ? 'Already have an account?' : "Don't have an account?"}{' '}
                 <button
                   type="button"
                   onClick={onRegisterClick}
                   className="text-primary hover:underline font-medium"
                 >
-                  Sign up
+                  {isRegister ? 'Sign in' : 'Sign up'}
                 </button>
               </Text>
             </div>
