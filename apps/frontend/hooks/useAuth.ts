@@ -4,6 +4,9 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 import { apiClient } from '@/lib/api-generated';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('auth');
 
 interface User {
   id: string;
@@ -51,7 +54,7 @@ export const useAuth = create<AuthState>()(
 
           return { success: true, message: 'Magic link sent successfully' };
         } catch (err) {
-          console.error('Send magic link error:', err);
+          log.error('Send magic link failed', err);
           throw err;
         }
       },
@@ -76,7 +79,7 @@ export const useAuth = create<AuthState>()(
             });
           }
         } catch (error) {
-          console.error('Verify magic link error:', error);
+          log.error('Verify magic link failed', error);
           throw error;
         }
       },
@@ -89,7 +92,7 @@ export const useAuth = create<AuthState>()(
             await apiClient.POST('/api/auth/logout', {});
           }
         } catch (error) {
-          console.error('Logout error:', error);
+          log.error('Logout request failed', error);
         } finally {
           set({ user: null, token: null, isAuthenticated: false });
         }
@@ -112,7 +115,7 @@ export const useAuth = create<AuthState>()(
             set({ user, isAuthenticated: true, isLoading: false });
           }
         } catch (error) {
-          console.error('Check auth error:', error);
+          log.error('Check auth failed', error);
           set({ user: null, token: null, isAuthenticated: false, isLoading: false });
         }
       },

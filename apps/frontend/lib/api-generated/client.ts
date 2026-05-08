@@ -4,7 +4,12 @@
  */
 
 import createClient, { type Middleware } from 'openapi-fetch';
+
+import { createLogger } from '../logger';
+
 import type { paths } from './schema';
+
+const log = createLogger('api-client');
 
 // Don't include /api in baseUrl since OpenAPI paths already include it
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/api$/, '') || 'http://localhost:4000';
@@ -43,7 +48,7 @@ let getToken = (): string | null => {
       return parsed.state?.token || null;
     }
   } catch (error) {
-    console.error('Failed to get token:', error);
+    log.error('Failed to get token from storage', error);
   }
   
   return null;

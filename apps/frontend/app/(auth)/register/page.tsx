@@ -5,6 +5,9 @@ import * as React from 'react';
 
 import { LoginForm } from '@/components/organisms/LoginForm';
 import { MagicLinkSent } from '@/components/organisms/MagicLinkSent';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('auth:register');
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -22,7 +25,7 @@ export default function RegisterPage() {
       setEmail(emailAddress);
       setStep('sent');
     } catch (error) {
-      console.error('Failed to send magic link:', error);
+      log.error('Failed to send magic link', error);
       throw error;
     } finally {
       setIsLoading(false);

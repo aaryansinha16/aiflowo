@@ -5,6 +5,9 @@ import * as React from 'react';
 
 import { LoginForm } from '@/components/organisms/LoginForm';
 import { MagicLinkSent } from '@/components/organisms/MagicLinkSent';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('auth:login');
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,7 +25,7 @@ export default function LoginPage() {
       setEmail(emailAddress);
       setStep('sent');
     } catch (error) {
-      console.error('Failed to send magic link:', error);
+      log.error('Failed to send magic link', error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -31,13 +34,13 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     // TODO: Implement Google OAuth
-    console.log('Google login clicked');
+    log.info('Google login clicked (not implemented)');
     // window.location.href = '/api/auth/google';
   };
 
   const handleGithubLogin = async () => {
     // TODO: Implement GitHub OAuth
-    console.log('GitHub login clicked');
+    log.info('GitHub login clicked (not implemented)');
     // window.location.href = '/api/auth/github';
   };
 

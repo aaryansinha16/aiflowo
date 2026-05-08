@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { Loader2, Sparkles, CheckCircle, XCircle, ExternalLink, Copy, AlertCircle, Plus, User } from 'lucide-react';
 
 import { useAuth } from '@/hooks/useAuth';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('forms:fill');
 
 interface FormProfile {
   id: string;
@@ -85,7 +88,7 @@ export default function FormFillerPage() {
         }
       }
     } catch (error) {
-      console.error('Failed to fetch profiles:', error);
+      log.error('Failed to fetch profiles', error);
     } finally {
       setIsLoadingProfiles(false);
     }

@@ -5,6 +5,10 @@
 
 import { useEffect, useRef } from 'react';
 
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('sse:task');
+
 export interface TaskUpdateEvent {
   taskId: string;
   status?: string;
@@ -46,7 +50,7 @@ export function useTaskStream({
     eventSource.onmessage = (event) => {
       try {
         const data: TaskUpdateEvent = JSON.parse(event.data);
-        console.log('[SSE] Task update:', data);
+        log.debug('Task update', { data });
 
         // Call general update handler
         onUpdate?.(data);
@@ -58,18 +62,18 @@ export function useTaskStream({
           onError?.(data);
         }
       } catch (error) {
-        console.error('[SSE] Failed to parse event:', error);
+        log.error('Failed to parse event', error);
       }
     };
 
     eventSource.onerror = (error) => {
-      console.error('[SSE] Connection error:', error);
+      log.error('Connection error', error);
       eventSource.close();
     };
 
     // Cleanup on unmount
     return () => {
-      console.log('[SSE] Closing connection for task:', taskId);
+      log.debug('Closing connection', { taskId });
       eventSource.close();
     };
   }, [taskId, enabled, onUpdate, onComplete, onError]);

@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { Plus, Edit, Trash2, Star, StarOff, Loader2, User } from 'lucide-react';
 
 import { useAuth } from '@/hooks/useAuth';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('forms:profiles');
 
 interface FormProfile {
   id: string;
@@ -56,7 +59,7 @@ export default function ProfilesPage() {
         setProfiles(data);
       }
     } catch (error) {
-      console.error('Failed to fetch profiles:', error);
+      log.error('Failed to fetch profiles', error);
     } finally {
       setIsLoading(false);
     }
@@ -76,7 +79,7 @@ export default function ProfilesPage() {
         fetchProfiles(); // Refresh list
       }
     } catch (error) {
-      console.error('Failed to set default:', error);
+      log.error('Failed to set default profile', error);
     }
   };
 
@@ -98,7 +101,7 @@ export default function ProfilesPage() {
         fetchProfiles(); // Refresh list
       }
     } catch (error) {
-      console.error('Failed to delete profile:', error);
+      log.error('Failed to delete profile', error);
     }
   };
 
