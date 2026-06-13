@@ -12,12 +12,6 @@ interface User {
   profile?: Record<string, unknown>;
 }
 
-interface RegisterData {
-  name: string;
-  email: string;
-  password: string;
-}
-
 interface AuthState {
   user: User | null;
   token: string | null;
@@ -29,7 +23,6 @@ interface AuthState {
   setToken: (token: string | null) => void;
   sendMagicLink: (email: string) => Promise<{ success: boolean; message: string }>;
   verifyMagicLink: (token: string) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
 }
@@ -84,29 +77,6 @@ export const useAuth = create<AuthState>()(
           }
         } catch (error) {
           console.error('Verify magic link error:', error);
-          throw error;
-        }
-      },
-
-      register: async (registerData) => {
-        try {
-          const { data, error } = await (apiClient.POST as any)('/api/auth/register', {
-            body: { email: registerData.email, password: registerData.password, name: registerData.name },
-          });
-
-          if (error) {
-            throw new Error((error as any).message || 'Registration failed');
-          }
-
-          if (data) {
-            set({
-              token: (data as any).accessToken,
-              user: (data as any).user,
-              isAuthenticated: true,
-            });
-          }
-        } catch (error) {
-          console.error('Register error:', error);
           throw error;
         }
       },

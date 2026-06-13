@@ -15,14 +15,22 @@ export interface LoginFormProps {
   onGithubLogin?: () => Promise<void>;
   onRegisterClick?: () => void;
   isLoading?: boolean;
+  title?: string;
+  description?: string;
+  footerPrompt?: string;
+  footerActionLabel?: string;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ 
-  onSubmit, 
+const LoginForm: React.FC<LoginFormProps> = ({
+  onSubmit,
   onGoogleLogin,
   onGithubLogin,
   onRegisterClick,
-  isLoading = false 
+  isLoading = false,
+  title = 'Welcome back',
+  description = 'Enter your email to receive a magic link',
+  footerPrompt = "Don't have an account?",
+  footerActionLabel = 'Sign up',
 }) => {
   const [email, setEmail] = React.useState('');
   const [error, setError] = React.useState('');
@@ -53,8 +61,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Welcome back</CardTitle>
-        <CardDescription>Enter your email to receive a magic link</CardDescription>
+        <CardTitle className="text-2xl">{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
@@ -98,13 +106,13 @@ const LoginForm: React.FC<LoginFormProps> = ({
           {onRegisterClick && (
             <div className="text-center">
               <Text variant="muted" className="text-sm">
-                Don&apos;t have an account?{' '}
+                {footerPrompt}{' '}
                 <button
                   type="button"
                   onClick={onRegisterClick}
                   className="text-primary hover:underline font-medium"
                 >
-                  Sign up
+                  {footerActionLabel}
                 </button>
               </Text>
             </div>

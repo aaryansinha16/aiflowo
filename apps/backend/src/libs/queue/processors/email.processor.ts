@@ -91,6 +91,10 @@ export class EmailProcessor extends WorkerHost {
 
     const magicLinkUrl = data?.magicLinkUrl || 'https://example.com/verify?token=xxx';
 
+    // Real email delivery is not wired up yet (see TODO above). Until it is,
+    // log the magic link so it can be completed manually in local/dev setups.
+    this.logger.log(`Magic link for ${to}: ${magicLinkUrl}`);
+
     await job.updateProgress(100);
 
     return {
