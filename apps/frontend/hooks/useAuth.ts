@@ -41,7 +41,7 @@ export const useAuth = create<AuthState>()(
 
       sendMagicLink: async (email) => {
         try {
-          const { data, error } = await apiClient.POST('/api/auth/magic-link/send', {
+          const { error } = await apiClient.POST('/api/auth/magic-link/send', {
             body: { email } as any,
           });
           
