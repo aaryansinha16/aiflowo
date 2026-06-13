@@ -5,6 +5,9 @@ import * as React from 'react';
 
 import { LoginForm } from '@/components/organisms/LoginForm';
 import { MagicLinkSent } from '@/components/organisms/MagicLinkSent';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('auth:login');
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,31 +17,19 @@ export default function LoginPage() {
 
   const handleSendMagicLink = async (emailAddress: string) => {
     setIsLoading(true);
-    
+
     try {
       const { useAuth } = await import('@/hooks/useAuth');
       await useAuth.getState().sendMagicLink(emailAddress);
-      
+
       setEmail(emailAddress);
       setStep('sent');
     } catch (error) {
-      console.error('Failed to send magic link:', error);
+      log.error('Failed to send magic link', error);
       throw error;
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleGoogleLogin = async () => {
-    // TODO: Implement Google OAuth
-    console.log('Google login clicked');
-    // window.location.href = '/api/auth/google';
-  };
-
-  const handleGithubLogin = async () => {
-    // TODO: Implement GitHub OAuth
-    console.log('GitHub login clicked');
-    // window.location.href = '/api/auth/github';
   };
 
   const handleRegisterClick = () => {
@@ -58,9 +49,8 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center p-4">
       {step === 'form' ? (
         <LoginForm
+          variant="login"
           onSubmit={handleSendMagicLink}
-          onGoogleLogin={handleGoogleLogin}
-          onGithubLogin={handleGithubLogin}
           onRegisterClick={handleRegisterClick}
           isLoading={isLoading}
         />
