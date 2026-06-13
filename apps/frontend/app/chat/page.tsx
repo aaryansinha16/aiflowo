@@ -8,7 +8,10 @@ import { NewChatDialog, ResizableSidebar } from '@/components/molecules';
 import { ChatSidebar, ChatView } from '@/components/organisms';
 import type { Chat as ChatType, Message } from '@/components/organisms/ChatView';
 import { useAuth } from '@/hooks/useAuth';
+import { createLogger } from '@/lib/logger';
 import { cn } from '@/lib/utils';
+
+const log = createLogger('chat');
 
 /**
  * Format task result into human-readable message
@@ -106,28 +109,28 @@ export default function ChatPage() {
 
   // Check auth on mount
   React.useEffect(() => {
-    console.log('Checking auth on mount...');
+    log.debug('Checking auth on mount');
     checkAuth();
   }, []);
 
   // Fetch chats after auth is checked
   React.useEffect(() => {
-    console.log('Auth state:', { authLoading, isAuthenticated, token: token?.slice(0, 20) });
-    
+    log.debug('Auth state', { authLoading, isAuthenticated, token: token?.slice(0, 20) });
+
     // Wait for initial auth check
     if (authLoading) {
-      console.log('Waiting for auth to load...');
+      log.debug('Waiting for auth to load');
       return;
     }
     
     // Redirect to login if not authenticated
     if (!isAuthenticated || !token) {
-      console.log('Not authenticated, redirecting to login');
+      log.debug('Not authenticated, redirecting to login');
       router.push('/login');
       return;
     }
     
-    console.log('Authenticated! Loading chats...');
+    log.debug('Authenticated, loading chats');
     loadChats();
   }, [token, isAuthenticated, authLoading]);
 
@@ -142,17 +145,17 @@ export default function ChatPage() {
 
   const loadChats = async () => {
     if (!token) {
-      console.log('loadChats: No token available');
+      log.debug('loadChats: no token available');
       return;
     }
     
-    console.log('loadChats: Starting API call with token:', token.slice(0, 20));
-    
+    log.debug('loadChats: starting API call', { token: token.slice(0, 20) });
+
     try {
       setIsLoadingChats(true);
       setError(undefined);
       
-      console.log('Making API call to /chats...');
+      log.debug('Making API call to /chats');
       const { data, error } = await apiClient.GET('/api/chats', {
         params: {
           query: {
@@ -164,12 +167,12 @@ export default function ChatPage() {
       });
       
       if (error) {
-        console.error('Failed to load chats:', error);
+        log.error('Failed to load chats', error);
         setError('Failed to load chats. Please refresh the page.');
         return;
       }
       
-      console.log('Chats loaded successfully:', data.length, 'chats');
+      log.debug('Chats loaded successfully', { count: data.length });
       setChats(data);
       
       // Auto-select first chat if none selected
@@ -177,7 +180,7 @@ export default function ChatPage() {
         setActiveChat(data[0].id);
       }
     } catch (err) {
-      console.error('Failed to load chats:', err);
+      log.error('Failed to load chats', err);
       setError('Failed to load chats. Please refresh the page.');
     } finally {
       setIsLoadingChats(false);
@@ -203,7 +206,7 @@ export default function ChatPage() {
       eventSource.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          console.log('[SSE] Task update:', data);
+          log.debug('Task update', { data });
 
           // Update message status in UI based on status
           let statusMessage = '';
@@ -230,7 +233,7 @@ export default function ChatPage() {
 
           // Handle completion - reload to get formatted result
           if (data.status === 'SUCCEEDED') {
-            console.log('[SSE] Task completed:', data);
+            log.debug('Task completed', { data });
             // Reload messages to get final formatted result
             if (activeChat) {
               setTimeout(() => loadMessages(activeChat), 500);
@@ -238,18 +241,18 @@ export default function ChatPage() {
             // Remove from active tasks
             setActiveTasks((prev) => prev.filter((id) => id !== taskId));
           } else if (data.status === 'FAILED') {
-            console.error('[SSE] Task failed:', data);
+            log.error('Task failed', data);
             setError(`Task failed: ${data.error}`);
             // Remove from active tasks
             setActiveTasks((prev) => prev.filter((id) => id !== taskId));
           }
         } catch (error) {
-          console.error('[SSE] Failed to parse event:', error);
+          log.error('Failed to parse event', error);
         }
       };
 
       eventSource.onerror = (error) => {
-        console.error('[SSE] Connection error:', error);
+        log.error('Connection error', error);
         eventSource.close();
         eventSources.delete(taskId);
       };
@@ -259,7 +262,7 @@ export default function ChatPage() {
 
     // Cleanup on unmount or when activeTasks changes
     return () => {
-      console.log('[SSE] Cleaning up connections');
+      log.debug('Cleaning up connections');
       eventSources.forEach((es) => es.close());
       eventSources.clear();
     };
@@ -277,7 +280,7 @@ export default function ChatPage() {
       }) as { data: any; error: any };
       
       if (error) {
-        console.error('Failed to load messages:', error);
+        log.error('Failed to load messages', error);
         setError('Failed to load chat messages');
         return;
       }
@@ -332,7 +335,7 @@ export default function ChatPage() {
       setMessages(taskMessages);
       setActiveTasks(runningTasks);
     } catch (err) {
-      console.error('Failed to load messages:', err);
+      log.error('Failed to load messages', err);
       setError('Failed to load chat messages');
     } finally {
       setIsLoadingMessages(false);
@@ -355,7 +358,7 @@ export default function ChatPage() {
       });
       
       if (error) {
-        console.error('Failed to create chat:', error);
+        log.error('Failed to create chat', error);
         setError('Failed to create new chat');
         return;
       }
@@ -365,7 +368,7 @@ export default function ChatPage() {
         setActiveChat(newChat.id);
       }
     } catch (err) {
-      console.error('Failed to create chat:', err);
+      log.error('Failed to create chat', err);
       setError('Failed to create new chat');
     } finally {
       setIsSending(false);
@@ -411,7 +414,7 @@ export default function ChatPage() {
       // Reload chat list to update lastMessage and taskCount
       await loadChats();
     } catch (err) {
-      console.error('Failed to send message:', err);
+      log.error('Failed to send message', err);
       setError('Failed to send message');
       // Remove optimistic message on error
       setMessages((prev) => prev.slice(0, -1));

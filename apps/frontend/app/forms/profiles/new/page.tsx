@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { Save, Loader2, ArrowLeft } from 'lucide-react';
 
 import { useAuth } from '@/hooks/useAuth';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('forms:profiles:new');
 
 export default function NewProfilePage() {
   const router = useRouter();
@@ -76,7 +79,7 @@ export default function NewProfilePage() {
         alert('Failed to create profile');
       }
     } catch (error) {
-      console.error('Failed to create profile:', error);
+      log.error('Failed to create profile', error);
       alert('An error occurred');
     } finally {
       setIsLoading(false);

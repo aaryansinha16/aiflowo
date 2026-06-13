@@ -4,18 +4,15 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 import { apiClient } from '@/lib/api-generated';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('auth');
 
 interface User {
   id: string;
   email: string;
   name?: string;
   profile?: Record<string, unknown>;
-}
-
-interface RegisterData {
-  name: string;
-  email: string;
-  password: string;
 }
 
 interface AuthState {
@@ -29,7 +26,6 @@ interface AuthState {
   setToken: (token: string | null) => void;
   sendMagicLink: (email: string) => Promise<{ success: boolean; message: string }>;
   verifyMagicLink: (token: string) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
 }
@@ -48,17 +44,17 @@ export const useAuth = create<AuthState>()(
 
       sendMagicLink: async (email) => {
         try {
-          const { data, error } = await apiClient.POST('/api/auth/magic-link/send', {
+          const { error } = await apiClient.POST('/api/auth/magic-link/send', {
             body: { email } as any,
           });
-          
+
           if (error) {
             throw new Error('Failed to send magic link');
           }
-          
+
           return { success: true, message: 'Magic link sent successfully' };
         } catch (err) {
-          console.error('Send magic link error:', err);
+          log.error('Send magic link failed', err);
           throw err;
         }
       },
@@ -83,30 +79,7 @@ export const useAuth = create<AuthState>()(
             });
           }
         } catch (error) {
-          console.error('Verify magic link error:', error);
-          throw error;
-        }
-      },
-
-      register: async (registerData) => {
-        try {
-          const { data, error } = await (apiClient.POST as any)('/api/auth/register', {
-            body: { email: registerData.email, password: registerData.password, name: registerData.name },
-          });
-
-          if (error) {
-            throw new Error((error as any).message || 'Registration failed');
-          }
-
-          if (data) {
-            set({
-              token: (data as any).accessToken,
-              user: (data as any).user,
-              isAuthenticated: true,
-            });
-          }
-        } catch (error) {
-          console.error('Register error:', error);
+          log.error('Verify magic link failed', error);
           throw error;
         }
       },
@@ -119,7 +92,7 @@ export const useAuth = create<AuthState>()(
             await apiClient.POST('/api/auth/logout', {});
           }
         } catch (error) {
-          console.error('Logout error:', error);
+          log.error('Logout request failed', error);
         } finally {
           set({ user: null, token: null, isAuthenticated: false });
         }
@@ -142,7 +115,7 @@ export const useAuth = create<AuthState>()(
             set({ user, isAuthenticated: true, isLoading: false });
           }
         } catch (error) {
-          console.error('Check auth error:', error);
+          log.error('Check auth failed', error);
           set({ user: null, token: null, isAuthenticated: false, isLoading: false });
         }
       },

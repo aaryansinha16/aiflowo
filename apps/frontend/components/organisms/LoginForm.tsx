@@ -13,17 +13,37 @@ export interface LoginFormProps {
   onSubmit: (email: string) => Promise<void>;
   onGoogleLogin?: () => Promise<void>;
   onGithubLogin?: () => Promise<void>;
+  /** Handler for the footer link that toggles between the login and signup screens. */
   onRegisterClick?: () => void;
+  /** Switches the copy between sign-in and sign-up. Both share the same magic-link request. */
+  variant?: 'login' | 'register';
   isLoading?: boolean;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ 
-  onSubmit, 
+const COPY = {
+  login: {
+    title: 'Welcome back',
+    description: 'Enter your email to receive a magic link',
+    togglePrompt: "Don't have an account?",
+    toggleAction: 'Sign up',
+  },
+  register: {
+    title: 'Create your account',
+    description: "Enter your email and we'll send you a magic link to get started",
+    togglePrompt: 'Already have an account?',
+    toggleAction: 'Sign in',
+  },
+} as const;
+
+const LoginForm: React.FC<LoginFormProps> = ({
+  onSubmit,
   onGoogleLogin,
   onGithubLogin,
   onRegisterClick,
-  isLoading = false 
+  variant = 'login',
+  isLoading = false,
 }) => {
+  const copy = COPY[variant];
   const [email, setEmail] = React.useState('');
   const [error, setError] = React.useState('');
 
@@ -53,8 +73,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Welcome back</CardTitle>
-        <CardDescription>Enter your email to receive a magic link</CardDescription>
+        <CardTitle className="text-2xl">{copy.title}</CardTitle>
+        <CardDescription>{copy.description}</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
@@ -98,13 +118,13 @@ const LoginForm: React.FC<LoginFormProps> = ({
           {onRegisterClick && (
             <div className="text-center">
               <Text variant="muted" className="text-sm">
-                Don&apos;t have an account?{' '}
+                {copy.togglePrompt}{' '}
                 <button
                   type="button"
                   onClick={onRegisterClick}
                   className="text-primary hover:underline font-medium"
                 >
-                  Sign up
+                  {copy.toggleAction}
                 </button>
               </Text>
             </div>
