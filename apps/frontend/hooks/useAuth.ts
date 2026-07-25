@@ -5,6 +5,20 @@ import { persist } from 'zustand/middleware';
 
 import { apiClient } from '@/lib/api-generated';
 
+/**
+ * Prefix used to tag client-side "simple" sessions (email/password sign-up or
+ * instant demo sign-in). These do not correspond to a backend JWT, so
+ * `checkAuth` validates them locally instead of calling `/api/auth/me`.
+ */
+const DEMO_TOKEN_PREFIX = 'demo.';
+
+const createDemoToken = (): string => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `${DEMO_TOKEN_PREFIX}${crypto.randomUUID()}`;
+  }
+  return `${DEMO_TOKEN_PREFIX}${Date.now().toString(36)}`;
+};
+
 interface User {
   id: string;
   email: string;
@@ -29,6 +43,7 @@ interface AuthState {
   setToken: (token: string | null) => void;
   sendMagicLink: (email: string) => Promise<{ success: boolean; message: string }>;
   verifyMagicLink: (token: string) => Promise<void>;
+  simpleLogin: (email: string, name?: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
@@ -88,27 +103,45 @@ export const useAuth = create<AuthState>()(
         }
       },
 
-      register: async (registerData) => {
-        try {
-          const { data, error } = await (apiClient.POST as any)('/api/auth/register', {
-            body: { email: registerData.email, password: registerData.password, name: registerData.name },
-          });
+      simpleLogin: async (email, name) => {
+        const normalizedEmail = email.trim().toLowerCase();
 
-          if (error) {
-            throw new Error((error as any).message || 'Registration failed');
-          }
-
-          if (data) {
-            set({
-              token: (data as any).accessToken,
-              user: (data as any).user,
-              isAuthenticated: true,
-            });
-          }
-        } catch (error) {
-          console.error('Register error:', error);
-          throw error;
+        if (!normalizedEmail) {
+          throw new Error('Email is required');
         }
+
+        set({
+          user: {
+            id: `demo-${normalizedEmail}`,
+            email: normalizedEmail,
+            name: name?.trim() || normalizedEmail.split('@')[0],
+          },
+          token: createDemoToken(),
+          isAuthenticated: true,
+          isLoading: false,
+        });
+      },
+
+      // The backend only exposes magic-link auth, so registration creates a
+      // local session client-side. Swap this for a real endpoint when the
+      // backend gains email/password sign-up.
+      register: async (registerData) => {
+        const normalizedEmail = registerData.email.trim().toLowerCase();
+
+        if (!normalizedEmail) {
+          throw new Error('Email is required');
+        }
+
+        set({
+          user: {
+            id: `demo-${normalizedEmail}`,
+            email: normalizedEmail,
+            name: registerData.name.trim() || normalizedEmail.split('@')[0],
+          },
+          token: createDemoToken(),
+          isAuthenticated: true,
+          isLoading: false,
+        });
       },
 
       logout: async () => {
@@ -131,6 +164,12 @@ export const useAuth = create<AuthState>()(
           
           if (!token) {
             set({ user: null, isAuthenticated: false, isLoading: false });
+            return;
+          }
+
+          // Local/demo sessions are validated client-side only.
+          if (token.startsWith(DEMO_TOKEN_PREFIX)) {
+            set({ isAuthenticated: true, isLoading: false });
             return;
           }
 

@@ -29,6 +29,22 @@ export default function LoginPage() {
     }
   };
 
+  const handleSimpleLogin = async (emailAddress: string) => {
+    setIsLoading(true);
+
+    try {
+      const { useAuth } = await import('@/hooks/useAuth');
+      await useAuth.getState().simpleLogin(emailAddress);
+
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Failed to sign in:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleGoogleLogin = async () => {
     // TODO: Implement Google OAuth
     console.log('Google login clicked');
@@ -59,6 +75,7 @@ export default function LoginPage() {
       {step === 'form' ? (
         <LoginForm
           onSubmit={handleSendMagicLink}
+          onSimpleLogin={handleSimpleLogin}
           onGoogleLogin={handleGoogleLogin}
           onGithubLogin={handleGithubLogin}
           onRegisterClick={handleRegisterClick}

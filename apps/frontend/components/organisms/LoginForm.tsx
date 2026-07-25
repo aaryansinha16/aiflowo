@@ -1,6 +1,6 @@
 'use client';
 
-import { Loader2, Mail } from 'lucide-react';
+import { Loader2, LogIn, Mail } from 'lucide-react';
 import * as React from 'react';
 
 import { Text } from '@/components/atoms';
@@ -11,35 +11,46 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 export interface LoginFormProps {
   onSubmit: (email: string) => Promise<void>;
+  onSimpleLogin?: (email: string) => Promise<void>;
   onGoogleLogin?: () => Promise<void>;
   onGithubLogin?: () => Promise<void>;
   onRegisterClick?: () => void;
   isLoading?: boolean;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ 
-  onSubmit, 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const LoginForm: React.FC<LoginFormProps> = ({
+  onSubmit,
+  onSimpleLogin,
   onGoogleLogin,
   onGithubLogin,
   onRegisterClick,
-  isLoading = false 
+  isLoading = false
 }) => {
   const [email, setEmail] = React.useState('');
   const [error, setError] = React.useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const validateEmail = (): boolean => {
     setError('');
 
-    // Basic email validation
     if (!email) {
       setError('Email is required');
-      return;
+      return false;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!EMAIL_REGEX.test(email)) {
       setError('Please enter a valid email address');
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateEmail()) {
       return;
     }
 
@@ -47,6 +58,18 @@ const LoginForm: React.FC<LoginFormProps> = ({
       await onSubmit(email);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to send magic link');
+    }
+  };
+
+  const handleSimpleLogin = async () => {
+    if (!onSimpleLogin || !validateEmail()) {
+      return;
+    }
+
+    try {
+      await onSimpleLogin(email);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to sign in');
     }
   };
 
@@ -86,6 +109,20 @@ const LoginForm: React.FC<LoginFormProps> = ({
               </>
             )}
           </Button>
+
+          {onSimpleLogin && (
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              size="lg"
+              onClick={handleSimpleLogin}
+              disabled={isLoading}
+            >
+              <LogIn className="h-4 w-4" />
+              Sign in instantly (demo)
+            </Button>
+          )}
 
           {(onGoogleLogin || onGithubLogin) && (
             <SocialLoginButtons
