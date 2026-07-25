@@ -15,6 +15,7 @@
     "dev:workers": "npm run dev --workspace=playwright-worker & npm run dev --workspace=media-worker",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "clean": "npm run clean --workspaces --if-present && rm -rf node_modules",
     "db:migrate": "npm run prisma migrate dev --workspace=backend",

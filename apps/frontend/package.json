@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "echo 'Frontend lint temporarily disabled - TypeScript type checking via build serves the same purpose'",
+    "typecheck": "tsc --noEmit",
     "clean": "rm -rf .next node_modules",
     "generate:api": "openapi-typescript http://localhost:4000/api/docs-json -o ./lib/api-generated/schema.d.ts"
   },
